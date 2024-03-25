@@ -31,12 +31,25 @@ namespace NeuralNet
 		}
 
 
-		void setInputValues(const std::vector<float>& signals_) override;
-		void setInputValue(unsigned int index, float signal) override;
+		void setInputValues(const std::vector<float>& values) override;
+		void setInputValue(unsigned int index, float value) override;
 		std::vector<float> getOutputValues() const override;
 		float getOutputValue(unsigned int index) const override;
 
 		void update() override;
+
+		std::vector<float> getWeights() const;
+		float getWeight(unsigned int layerIdx, unsigned int neuronIdx, unsigned int inputIdx) const;
+		void setWeights(const std::vector<float>& weights);
+		void setWeight(unsigned int layerIdx, unsigned int neuronIdx, unsigned int inputIdx, float weight);
+
+		Activation::Type getActivationType(unsigned int layerIdx, unsigned int neuronIdx) const;
+		void setActivationType(unsigned int layerIdx, unsigned int neuronIdx, Activation::Type type) const;
+		void setActivationType(unsigned int layerIdx, Activation::Type type) const;
+		void setActivationType(Activation::Type type) const;
+
+		float getInputValue(unsigned int index) const;
+		float getHiddenValue(unsigned int layerIdx, unsigned int neuronIdx) const;
 	protected:
 
 
@@ -55,7 +68,7 @@ namespace NeuralNet
 
 		std::vector<LayerData> m_layers;
 
-		std::vector<float> m_inputSignals;
-		std::vector<float> m_outputSignals;
+		std::vector<float> m_inputValues;
+		std::vector<float> m_outputValues;
 	};
 }

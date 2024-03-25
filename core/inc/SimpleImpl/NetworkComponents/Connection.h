@@ -50,24 +50,24 @@ namespace NeuralNet
 		{
 			m_weight += deltaWeight;
 		}
-		void passSignal(float signal) const
+		void passValue(float Value) const
 		{
 			if(m_endNeuron)
-				m_endNeuron->addInputValue(getOutputSignal(signal));
+				m_endNeuron->addInputValue(getOutputValue(Value));
 		}
-		void passSignal() const
+		void passValue() const
 		{
 			if (!m_endNeuron || !m_startNeuron)
 				return;
-			m_endNeuron->addInputValue(getOutputSignal());
+			m_endNeuron->addInputValue(getOutputValue());
 		}
-		float getOutputSignal(float inputSignal) const
+		float getOutputValue(float inputValue) const
 		{
-			return inputSignal * m_weight;
+			return inputValue * m_weight;
 		}
-		float getOutputSignal() const
+		float getOutputValue() const
 		{
-			return getOutputSignal(m_startNeuron->getOutput());
+			return getOutputValue(m_startNeuron->getOutput());
 		}
 	protected:
 

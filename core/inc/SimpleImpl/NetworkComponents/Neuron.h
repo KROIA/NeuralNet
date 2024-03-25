@@ -2,7 +2,6 @@
 
 #include "NeuralNet_base.h"
 #include <vector>
-#include "Base/ActivationFunction.h"
 #include "Base/NeuronBase.h"
 
 namespace NeuralNet
@@ -20,7 +19,7 @@ namespace NeuralNet
 
 		virtual ~Neuron();
 
-		void setValues(const std::vector<float>& values)
+		void setInputValues(const std::vector<float>& values)
 		{
 			m_inputValues = values;
 		}
@@ -28,19 +27,11 @@ namespace NeuralNet
 		{
 			m_inputValues.push_back(value);
 		}
-		void clearValue()
+		void clearValue() override
 		{
 			m_inputValues.clear();
 		}
-		void setActivationType(Activation::Type type)
-		{
-			m_activationType = type;
-			m_activationFunction = Activation::getActivationFunction(type);
-		}
-		Activation::Type getActivationType() const
-		{
-			return m_activationType;
-		}
+		
 
 		void update() override;
 	protected:
@@ -51,7 +42,5 @@ namespace NeuralNet
 		
 	private:
 		std::vector<float> m_inputValues;
-		Activation::ActivationFunction m_activationFunction;
-		Activation::Type m_activationType = Activation::Type::sigmoid;
 	};
 }

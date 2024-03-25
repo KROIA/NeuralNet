@@ -1,6 +1,7 @@
 #pragma once
 
 #include "NeuralNet_base.h"
+#include "Base/ActivationFunction.h"
 
 namespace NeuralNet
 {
@@ -8,28 +9,43 @@ namespace NeuralNet
 	{
 	public:
 		NeuronBase()
-		{}
+		{
+			m_activationFunction = Activation::getActivationFunction(m_activationType);
+		}
+		NeuronBase(Activation::Type& activationType)
+		{
+			m_activationType = activationType;
+			m_activationFunction = Activation::getActivationFunction(m_activationType);
+		}
 		NeuronBase(const NeuronBase& neuron)
 		{
 			m_netinput = neuron.m_netinput;
 			m_output = neuron.m_output;
+			m_activationType = neuron.m_activationType;
+			m_activationFunction = Activation::getActivationFunction(m_activationType);
 		}
 		NeuronBase(NeuronBase&& neuron) noexcept
 		{
 			m_netinput = neuron.m_netinput;
 			m_output = neuron.m_output;
+			m_activationType = neuron.m_activationType;
+			m_activationFunction = Activation::getActivationFunction(m_activationType);
 		}
 
 		NeuronBase& operator=(const NeuronBase& neuron)
 		{
 			m_netinput = neuron.m_netinput;
 			m_output = neuron.m_output;
+			m_activationType = neuron.m_activationType;
+			m_activationFunction = Activation::getActivationFunction(m_activationType);
 			return *this;
 		}
 		NeuronBase& operator=(NeuronBase&& neuron) noexcept
 		{
 			m_netinput = neuron.m_netinput;
 			m_output = neuron.m_output;
+			m_activationType = neuron.m_activationType;
+			m_activationFunction = Activation::getActivationFunction(m_activationType);
 			return *this;
 		}
 		virtual ~NeuronBase()
@@ -63,10 +79,32 @@ namespace NeuralNet
 		{
 			m_output = m_netinput;
 		}
+
+		void setActivationType(Activation::Type type)
+		{
+			m_activationType = type;
+			m_activationFunction = Activation::getActivationFunction(type);
+		}
+		Activation::Type getActivationType() const
+		{
+			return m_activationType;
+		}
+
+		virtual void clearValue()
+		{
+
+		}
 	protected:
+
+		Activation::ActivationFunction getActivationFunction() const
+		{
+			return m_activationFunction;
+		}
 
 	private:
 		float m_netinput = 0.f;
 		float m_output = 0.f;
+		Activation::Type m_activationType = Activation::Type::linear;
+		Activation::ActivationFunction m_activationFunction;
 	};
 }

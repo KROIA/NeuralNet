@@ -33,17 +33,18 @@ private:
 		TEST_START(results);
 
 		NeuralNet::Neuron neuron;
-
-		TEST_ASSERT(compare(neuron.getOutput(), 0), "Output shuld be 0");
+		neuron.setActivationType(NeuralNet::Activation::Type::linear);
+		TEST_ASSERT(compare(neuron.getNetInput(), 0), "Output shuld be 0");
 		neuron.update();
-		TEST_ASSERT(compare(neuron.getOutput(), 0.5), "Output shuld be 0.5");
+		TEST_ASSERT(compare(neuron.getNetInput(), 0), "Output shuld be 0");
 
 		neuron.addInputValue(1.0f);
-		neuron.setActivationType(NeuralNet::Activation::Type::linear);
 		neuron.update();
+		TEST_ASSERT(compare(neuron.getNetInput(), 1));
 
-		float outp = neuron.getOutput();
-		TEST_ASSERT(compare(outp, 1), "Output shuld be 1");
+		neuron.addInputValue(2.0f);
+		neuron.update();
+		TEST_ASSERT(compare(neuron.getNetInput(), 3));
 
 		TEST_END;
 	}
@@ -55,17 +56,36 @@ private:
 	{
 		TEST_START(results);
 
-		int a = 0;
-		TEST_ASSERT_M(a == 0, "is a == 0?");
+		NeuralNet::Neuron neuron;
+		neuron.setActivationType(NeuralNet::Activation::Type::linear);
+		neuron.addInputValue(1.0f);
+		neuron.update();
+		TEST_ASSERT(compare(neuron.getOutput(), 1));
+		neuron.setActivationType(NeuralNet::Activation::Type::relu);
+		neuron.update();
+		TEST_ASSERT(compare(neuron.getOutput(), 1));
+		neuron.addInputValue(-2.0f);
+		TEST_ASSERT(compare(neuron.getOutput(), 1)); 
+		neuron.update();
+		TEST_ASSERT(compare(neuron.getOutput(), 0));
+		neuron.setActivationType(NeuralNet::Activation::Type::tanh_);
+		neuron.addInputValue(1.0f);
+		neuron.update();
+		TEST_ASSERT(compare(neuron.getOutput(), 0));
+		neuron.setActivationType(NeuralNet::Activation::Type::sigmoid);
+		neuron.update();
+		TEST_ASSERT(compare(neuron.getOutput(), 0.5));
 
-		int b = 0;
-		if (b != 0)
-		{
-			TEST_FAIL("b is not 0");
-		}
+		neuron.clearValue();
+		neuron.setActivationType(NeuralNet::Activation::Type::linear);
+		neuron.addInputValue(1.0f);
+		neuron.update();
+		TEST_ASSERT(compare(neuron.getOutput(), 1));
 
-		// fails if a != b
-		TEST_COMPARE(a, b);
+		neuron.setInputValues({ 1.0f , 5.f, 3.f});
+		neuron.update();
+		TEST_ASSERT(compare(neuron.getOutput(), 9.f));
+
 
 		TEST_END;
 	}
