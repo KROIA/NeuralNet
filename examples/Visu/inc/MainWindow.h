@@ -29,6 +29,9 @@ private:
 
     NeuralNet::Visualisation::VisuFullConnectedNeuronalNet* m_visuNet;
     NeuralNet::FullConnectedNeuralNet* m_net;
+    NeuralNet::CustomConnectedNeuralNet * m_customNet;
+
+
 
     QTimer m_timer;
 

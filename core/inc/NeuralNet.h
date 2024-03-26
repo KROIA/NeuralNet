@@ -11,7 +11,9 @@
 #include "Base/NeuralNetBase.h"
 
 #include "SimpleImpl/Nets/FullConnectedNeuralNet.h"
+#include "SimpleImpl/Nets/CustomConnectedNeuralNet.h"
 #include "SimpleImpl/NetworkComponents/Neuron.h"
+#include "SimpleImpl/NetworkComponents/InputNeuron.h"
 #include "SimpleImpl/NetworkComponents/Connection.h"
 
 

@@ -13,9 +13,9 @@
 
 // Instantiate Tests here:
 // TEST_INSTANTIATE(Test_simple); // Where Test_simple is a derived class from the Test class
-//TEST_INSTANTIATE(TST_Activation);
-//TEST_INSTANTIATE(TST_Neuron);
-//TEST_INSTANTIATE(TST_Connection);
+TEST_INSTANTIATE(TST_Activation);
+TEST_INSTANTIATE(TST_Neuron);
+TEST_INSTANTIATE(TST_Connection);
 TEST_INSTANTIATE(TST_FullConnectedNeuralNet);
 
 

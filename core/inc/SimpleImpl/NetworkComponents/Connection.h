@@ -9,12 +9,18 @@ namespace NeuralNet
 	{
 	public:
 		Connection()
+			: m_startNeuron(nullptr)
+			, m_endNeuron(nullptr)
+			, m_weight(1.0f)
 		{}
 		Connection(Neuron*from, Neuron* to, float weight)
-			: m_startNeuron(from)
-			, m_endNeuron(to)
+			: m_startNeuron(nullptr)
+			, m_endNeuron(nullptr)
 			, m_weight(weight)
-		{}
+		{
+			setStartNeuron(from);
+			setEndNeuron(to);
+		}
 		~Connection();
 
 		void setStartNeuron(Neuron* startNeuron)

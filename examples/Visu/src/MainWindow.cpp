@@ -50,6 +50,8 @@ void MainWindow::setupCanvas()
     m_canvas->addObject(defaultEditor);
     qDebug() << defaultEditor->toString().c_str();
 
+
+
     m_net = new NeuralNet::FullConnectedNeuralNet(3, 0, 1, 1);
     m_visuNet = m_net->createVisualisation();
     m_visuNet->setPosition(sf::Vector2f(50, 50));
@@ -63,6 +65,26 @@ void MainWindow::setupCanvas()
     m_net->setActivationType(NeuralNet::Activation::Type::gaussian);
     //m_net->setActivationType(1, 0, NeuralNet::Activation::Type::finiteLinear);
     m_canvas->addObject(m_visuNet);
+
+
+    m_customNet = new NeuralNet::CustomConnectedNeuralNet(3, 1);
+    m_customNet->addConnection(0, 3, 1);
+    m_customNet->addConnection(1, 3, 1);
+    m_customNet->addConnection(2, 3, 1);
+
+    m_customNet->addConnection(2, 4, 1);
+    m_customNet->addConnection(1, 4, 1);
+    m_customNet->addConnection(3, 4, 1);
+    m_customNet->addConnection(3, 5, 1);
+    m_customNet->buildNetwork();
+    m_customNet->setInputValues({ -1, 0.5, 1 });
+    m_customNet->update();
+
+    QSFML::Objects::CanvasObject* customVisuNet = new QSFML::Objects::CanvasObject("CustomConnectedNeuralNet");
+    customVisuNet->setPosition(sf::Vector2f(50, 300));
+    customVisuNet->addComponent(m_customNet->createVisualisation());
+    m_canvas->addObject(customVisuNet);
+
 }
 void MainWindow::closeEvent(QCloseEvent* event)
 {
