@@ -16,6 +16,8 @@ public:
     MainWindow(QWidget* parent = nullptr);
     ~MainWindow();
 
+private slots:
+    void onTimerFinish();
 private:
     void setupCanvas();
     void closeEvent(QCloseEvent* event) override;
@@ -27,4 +29,14 @@ private:
 
     NeuralNet::Visualisation::VisuFullConnectedNeuronalNet* m_visuNet;
     NeuralNet::FullConnectedNeuralNet* m_net;
+
+    QTimer m_timer;
+
+    struct TrainingSample
+    {
+        std::vector<float> inputs;
+        std::vector<float> expectedOutput;
+    };
+
+    std::vector<TrainingSample> m_trainingData;
 };

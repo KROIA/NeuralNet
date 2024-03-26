@@ -1,7 +1,7 @@
 #pragma once
 
 #include "NeuralNet_base.h"
-#include "Base/NeuronBase.h"
+#include "SimpleImpl/NetworkComponents/Neuron.h"
 
 namespace NeuralNet
 {
@@ -10,33 +10,29 @@ namespace NeuralNet
 	public:
 		Connection()
 		{}
-		Connection(NeuronBase*from, NeuronBase* to, float weight)
+		Connection(Neuron*from, Neuron* to, float weight)
 			: m_startNeuron(from)
 			, m_endNeuron(to)
 			, m_weight(weight)
 		{}
-		~Connection()
-		{}
+		~Connection();
 
-		void setStartNeuron(NeuronBase* startNeuron)
+		void setStartNeuron(Neuron* startNeuron)
 		{
 			m_startNeuron = startNeuron;
 		}
-		void setEndNeuron(NeuronBase* destinationNeuron)
-		{
-			m_endNeuron = destinationNeuron;
-		}
+		void setEndNeuron(Neuron* destinationNeuron);
 		void setWeight(float weight)
 		{
 			m_weight = weight;
 		}
 
 
-		NeuronBase* getStartNeuron() const
+		Neuron* getStartNeuron() const
 		{
 			return m_startNeuron;
 		}
-		NeuronBase* getEndNeuron() const
+		Neuron* getEndNeuron() const
 		{
 			return m_endNeuron;
 		}
@@ -50,7 +46,7 @@ namespace NeuralNet
 		{
 			m_weight += deltaWeight;
 		}
-		void passValue(float Value) const
+		/*void passValue(float Value) const
 		{
 			if(m_endNeuron)
 				m_endNeuron->addInputValue(getOutputValue(Value));
@@ -60,7 +56,7 @@ namespace NeuralNet
 			if (!m_endNeuron || !m_startNeuron)
 				return;
 			m_endNeuron->addInputValue(getOutputValue());
-		}
+		}*/
 		float getOutputValue(float inputValue) const
 		{
 			return inputValue * m_weight;
@@ -73,8 +69,8 @@ namespace NeuralNet
 
 		
 	private:
-		NeuronBase* m_startNeuron = nullptr;
-		NeuronBase* m_endNeuron = nullptr;
+		Neuron* m_startNeuron = nullptr;
+		Neuron* m_endNeuron = nullptr;
 		float m_weight = 1.f;
 	};
 }

@@ -1,12 +1,16 @@
 #include "SimpleImpl/Nets/FullConnectedNeuralNet.h"
+#include "SimpleImpl/NetworkComponents/InputNeuron.h"
+#include "Visualisation/VisuFullConnectedNeuronalNet.h"
+
+
 
 namespace NeuralNet
 {
 	FullConnectedNeuralNet::FullConnectedNeuralNet(
 		unsigned int inputSize,
-		unsigned int outputSize,
 		unsigned int hiddenLayerCount,
-		unsigned int hiddenLayerSize)
+		unsigned int hiddenLayerSize,
+		unsigned int outputSize)
 		: NeuralNetBase(inputSize, outputSize)
 		, m_hiddenLayerCount(hiddenLayerCount)
 		, m_hiddenLayerSize(hiddenLayerSize)
@@ -19,6 +23,11 @@ namespace NeuralNet
 	FullConnectedNeuralNet::~FullConnectedNeuralNet()
 	{
 		destroyNetwork();
+		for (auto& visu : m_visualisations)
+		{
+			visu->deleteThis();
+		}
+		m_visualisations.clear();
 	}
 
 
@@ -53,32 +62,31 @@ namespace NeuralNet
 
 	void FullConnectedNeuralNet::update()
 	{
-		if (m_hiddenLayerCount == 0)
+		if (m_layers.size() < 2)
 			return;
-		// Set input Values
-		LayerData &inputLayer = m_layers[0];
-		LayerData &outputLayer = m_layers[m_hiddenLayerCount]; // Index + 1 because of the input layer
-		for (unsigned int i = 0; i < inputLayer.neurons.size(); ++i)
-		{
-			inputLayer.neurons[i]->addInputValue(m_inputValues[i]);
-		}
-		for (auto& layer : m_layers)
+
+		/*for (auto& layer : m_layers)
 		{
 			for (auto& neuron : layer.neurons)
 			{
 				neuron->clearValue();
 			}
+		}*/
+
+		// Set input Values
+		Layer& inputLayer = m_layers[0];
+		Layer& outputLayer = m_layers[m_hiddenLayerCount+1]; // Index + 1 because of the input layer
+		for (unsigned int i = 0; i < inputLayer.neurons.size(); ++i)
+		{
+			InputNeuron* neuron = dynamic_cast<InputNeuron*>(inputLayer.neurons[i]);
+			neuron->setValue(m_inputValues[i]);
 		}
+		
 		for(auto &layer : m_layers)
 		{
-			for (auto& connection : layer.inputConnections)
-			{
-				connection->passValue();
-			}
 			for(auto &neuron : layer.neurons)
 			{
 				neuron->update();
-
 			}
 		}
 		for (unsigned int i = 0; i < outputLayer.neurons.size(); ++i)
@@ -89,8 +97,8 @@ namespace NeuralNet
 
 	std::vector<float> FullConnectedNeuralNet::getWeights() const
 	{
-		std::vector<float> weights( m_hiddenLayerCount * m_hiddenLayerSize * m_hiddenLayerSize +
-									m_hiddenLayerSize * getInputCount(), 0);
+		size_t weightCount = getWeightCount();
+		std::vector<float> weights(weightCount, 0);
 
 		size_t index = 0;
 		for (auto& layer : m_layers)
@@ -108,29 +116,48 @@ namespace NeuralNet
 		layerIdx++; // Skip the input layer
 		if (layerIdx > m_hiddenLayerCount+1)
 			return 0.0f;
-		if (neuronIdx >= m_hiddenLayerSize)
-			return 0.0f;
-		if (inputIdx >= getInputCount())
-			return 0.0f;
-		unsigned int offset = 0;
-		if (layerIdx == 1)
+		if (m_hiddenLayerCount == 0)
 		{
-			offset = neuronIdx * getInputCount();
-		}
-		else if(layerIdx < m_hiddenLayerCount+1)
-		{
-			offset = neuronIdx * m_hiddenLayerSize;
+			if (neuronIdx >= getOutputCount())
+				return 0.0f;
 		}
 		else
 		{
-			offset = neuronIdx * getOutputCount();
+			if (neuronIdx >= m_hiddenLayerSize)
+				return 0.0f;
+		}
+
+		
+		if (layerIdx == 1)
+		{
+			if (inputIdx >= getInputCount())
+				return 0.0f;
+		}
+		else
+		{
+			if (inputIdx >= m_hiddenLayerSize)
+				return 0.0f;
+		}
+		
+		unsigned int offset = 0;
+		if (layerIdx == 1)
+		{
+			if(m_hiddenLayerCount == 0)
+			{ 
+				offset = neuronIdx * getOutputCount();
+			}
+			else
+				offset = neuronIdx * getInputCount();
+		}
+		else
+		{
+			offset = neuronIdx * m_hiddenLayerSize;
 		}
 		return m_layers[layerIdx].inputConnections[offset + inputIdx]->getWeight();
 	}
 	void FullConnectedNeuralNet::setWeights(const std::vector<float>& weights)
 	{
-		if (weights.size() != m_hiddenLayerCount * m_hiddenLayerSize * m_hiddenLayerSize +
-			m_hiddenLayerSize * getInputCount())
+		if (weights.size() != getWeightCount())
 		{
 			return;
 		}
@@ -220,20 +247,63 @@ namespace NeuralNet
 		return m_layers[layerIdx].neurons[neuronIdx]->getOutput();
 	}
 
+	void FullConnectedNeuralNet::learn(const std::vector<float>& expectedOutput)
+	{
+		if (expectedOutput.size() != getOutputCount())
+			return;
+		m_backProp.learn(m_layers, expectedOutput);
+	}
+	std::vector<float> FullConnectedNeuralNet::getOutputError(const std::vector<float>& expectedOutput) const
+	{
+		if (expectedOutput.size() != getOutputCount())
+			return std::vector<float>();
+		std::vector<float> err(getOutputCount(), 0);
+		for (size_t i = 0; i < getOutputCount(); ++i)
+		{
+			err[i] = m_backProp.getError(getOutputValue(i), expectedOutput[i]);
+		}
+		return err;
+	}
+	float FullConnectedNeuralNet::getNetError(const std::vector<float>& expectedOutput) const
+	{	
+		if (expectedOutput.size() != getOutputCount())
+			return 0;
+		float netError = 0;
+		for (size_t i = 0; i < getOutputCount(); ++i)
+		{
+			float diff = m_backProp.getError(getOutputValue(i), expectedOutput[i]);
+			netError += diff * diff;
+		}
+		netError /= getOutputCount();
+		return netError;
+	}
+
+	Visualisation::VisuFullConnectedNeuronalNet* FullConnectedNeuralNet::createVisualisation()
+	{
+		Visualisation::VisuFullConnectedNeuronalNet * visu = new Visualisation::VisuFullConnectedNeuronalNet(this);
+		m_visualisations.push_back(visu);
+		return visu;
+	}
+
 	void FullConnectedNeuralNet::buildNetwork()
 	{
 		destroyNetwork();
+		if (m_hiddenLayerCount == 0 || m_hiddenLayerSize == 0)
+		{
+			m_hiddenLayerCount = 0;
+			m_hiddenLayerSize = 0;
+		}
 		m_layers.resize(m_hiddenLayerCount+2);
 		// Create the input layer
-		LayerData& inputLayer = m_layers[0];
+		Layer& inputLayer = m_layers[0];
 		inputLayer.neurons.resize(getInputCount());
 		for (unsigned int i = 0; i < getInputCount(); ++i)
 		{
-			inputLayer.neurons[i] = new NeuronBase();
+			inputLayer.neurons[i] = new InputNeuron();
 		}
 		for (unsigned int i = 1; i < m_hiddenLayerCount+1; ++i)
 		{
-			LayerData& layer = m_layers[i];
+			Layer& layer = m_layers[i];
 			layer.neurons.resize(m_hiddenLayerSize);
 			for (unsigned int j = 0; j < m_hiddenLayerSize; ++j)
 			{
@@ -244,7 +314,7 @@ namespace NeuralNet
 		// Connect the layers
 		if (m_hiddenLayerCount >= 1)
 		{
-			LayerData &firstHiddenLayer = m_layers[1];
+			Layer& firstHiddenLayer = m_layers[1];
 			for (unsigned int l = 0; l < m_hiddenLayerSize; ++l)
 			{
 				for (unsigned int i = 0; i < getInputCount(); ++i)
@@ -259,8 +329,8 @@ namespace NeuralNet
 		}
 		for (unsigned int i = 2; i < m_hiddenLayerCount+1; ++i)
 		{
-			LayerData& sendingLayer = m_layers[i-1];
-			LayerData& receivingLayer = m_layers[i];
+			Layer& sendingLayer = m_layers[i-1];
+			Layer& receivingLayer = m_layers[i];
 			
 			for (auto& receivingNeuron : receivingLayer.neurons)
 			{
@@ -275,7 +345,7 @@ namespace NeuralNet
 			}
 		}
 
-		LayerData& outputLayer = m_layers[m_hiddenLayerCount+1];
+		Layer& outputLayer = m_layers[m_hiddenLayerCount+1];
 		outputLayer.neurons.resize(getOutputCount());
 		for (unsigned int i = 0; i < getOutputCount(); ++i)
 		{

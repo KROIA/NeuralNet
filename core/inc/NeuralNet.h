@@ -9,7 +9,6 @@
 /// USER_SECTION_START 2
 #include "Base/ActivationFunction.h"
 #include "Base/NeuralNetBase.h"
-#include "Base/NeuronBase.h"
 
 #include "SimpleImpl/Nets/FullConnectedNeuralNet.h"
 #include "SimpleImpl/NetworkComponents/Neuron.h"

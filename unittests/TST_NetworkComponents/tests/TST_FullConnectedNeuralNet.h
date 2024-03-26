@@ -49,7 +49,7 @@ private:
 		unsigned int outputSize = 1;
 		unsigned int hiddenLayerCount = 1;
 		unsigned int hiddenLayerSize = 1;
-		NeuralNet::FullConnectedNeuralNet net(inputSize, outputSize, hiddenLayerCount, hiddenLayerSize);
+		NeuralNet::FullConnectedNeuralNet net(inputSize, hiddenLayerCount, hiddenLayerSize, outputSize);
 		net.setActivationType(NeuralNet::Activation::Type::linear);
 		std::vector<float> weights = net.getWeights();
 		for (size_t i = 0; i < weights.size(); i++)
