@@ -43,6 +43,8 @@ namespace NeuralNet
 		std::vector<float> getOutputValues() const override;
 		float getOutputValue(unsigned int index) const override;
 
+		Neuron* getNeuron(Neuron::ID id);
+
 		void update() override;
 
 		size_t getWeightCount() const
@@ -56,17 +58,17 @@ namespace NeuralNet
 			return getInputCount() * getOutputCount();
 		}
 		std::vector<float> getWeights() const;
-		float getWeight(unsigned int layerIdx, unsigned int neuronIdx, unsigned int inputIdx) const;
+		float getWeight(unsigned int layerIdx, unsigned int neuronIDx, unsigned int inputIdx) const;
 		void setWeights(const std::vector<float>& weights);
-		void setWeight(unsigned int layerIdx, unsigned int neuronIdx, unsigned int inputIdx, float weight);
+		void setWeight(unsigned int layerIdx, unsigned int neuronIDx, unsigned int inputIdx, float weight);
 
-		Activation::Type getActivationType(unsigned int layerIdx, unsigned int neuronIdx) const;
-		void setActivationType(unsigned int layerIdx, unsigned int neuronIdx, Activation::Type type) const;
+		Activation::Type getActivationType(unsigned int layerIdx, unsigned int neuronIDx) const;
+		void setActivationType(unsigned int layerIdx, unsigned int neuronIDx, Activation::Type type) const;
 		void setActivationType(unsigned int layerIdx, Activation::Type type) const;
 		void setActivationType(Activation::Type type) const;
 
 		float getInputValue(unsigned int index) const;
-		float getHiddenValue(unsigned int layerIdx, unsigned int neuronIdx) const;
+		float getHiddenValue(unsigned int layerIdx, unsigned int neuronIDx) const;
 
 
 		Visualisation::VisuFullConnectedNeuronalNet *createVisualisation();

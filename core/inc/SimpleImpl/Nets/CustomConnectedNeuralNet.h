@@ -2,61 +2,25 @@
 
 #include "NeuralNet_base.h"
 #include "Base/NeuralNetBase.h"
+#include "SimpleImpl/Nets/NetworkData.h"
 #include "SimpleImpl/NetworkComponents/Neuron.h"
 #include "SimpleImpl/NetworkComponents/Connection.h"
 #include "SimpleImpl/NetworkComponents/Layer.h"
 #include "QSFML_EditorWidget.h"
 #include <unordered_map>
 
+#include "LearnAlgo/Backpropagation.h"
+
 namespace NeuralNet
 {
+	namespace Visualisation
+	{
+		class CustomConnectedNeuralNetPainter;
+	}
 	class NEURAL_NET_EXPORT CustomConnectedNeuralNet : public NeuralNetBase
 	{
-		friend class CustomConnectedNeuralNetPainter;
+		friend class Visualisation::CustomConnectedNeuralNetPainter;
 	public:
-		struct ConnectionInfo
-		{
-			unsigned int fromNeuronID;
-			unsigned int toNeuronID;
-			float weight;
-		};
-		using NeuronID = unsigned int;
-		class NEURAL_NET_EXPORT CustomConnectedNeuralNetPainter : public QSFML::Components::Drawable
-		{
-			friend class CustomConnectedNeuralNet;
-			CustomConnectedNeuralNetPainter(
-				CustomConnectedNeuralNet *net, 
-				const std::string& name = "CustomConnectedNeuralNetPainter");
-
-			~CustomConnectedNeuralNetPainter();
-		public:
-
-
-		private:
-			void drawComponent(sf::RenderTarget& target, sf::RenderStates states) const override;
-
-			sf::Color signalColor(float value) const
-			{
-				value = m_signalSatturation * value;
-				return QSFML::Color::lerpLinear({ m_lowValueColor, m_mediumValueColor, m_highValueColor }, (value + 1.f) / 2.f);
-			}
-			float signalWidth(float weight) const
-			{
-				weight = sqrt(std::abs(weight * m_connectionWidth));
-				if (weight < 1)
-					return 1;
-				return weight;
-			}
-
-			sf::Color m_lowValueColor = sf::Color::Red;
-			sf::Color m_mediumValueColor = sf::Color(150, 150, 150);
-			sf::Color m_highValueColor = sf::Color::Green;
-			float m_signalSatturation = 0.5;
-			float m_connectionWidth = 2;
-			CustomConnectedNeuralNet* m_neuralNet;
-		};
-
-
 		CustomConnectedNeuralNet(
 			unsigned int inputSize,
 			unsigned int outputSize);
@@ -64,8 +28,12 @@ namespace NeuralNet
 		~CustomConnectedNeuralNet();
 
 		
+		void clearConnections()
+		{
+			m_buildingConnections.clear();
+		}
 		void addConnection(const ConnectionInfo& connectionInfo);
-		void addConnection(NeuronID fromNeuronID, NeuronID toNeuronID, float weight);
+		void addConnection(Neuron::ID fromNeuronID, Neuron::ID toNeuronID, float weight);
 		void setConnections(const std::vector<ConnectionInfo>& connections);
 
 		void buildNetwork();
@@ -76,29 +44,24 @@ namespace NeuralNet
 		std::vector<float> getOutputValues() const override;
 		float getOutputValue(unsigned int index) const override;
 
+		Activation::Type getActivationType(Neuron::ID id) const;
+		void setActivationType(Neuron::ID id, Activation::Type type) const;
+		void setLayerActivationType(unsigned int layerIdx, Activation::Type type) const;
+		void setActivationType(Activation::Type type) const;
+
+		Neuron* getNeuron(Neuron::ID id);
+
 		void update() override;
 
-		CustomConnectedNeuralNetPainter* createVisualisation();
+		Visualisation::CustomConnectedNeuralNetPainter* createVisualisation();
+
+		void learn(const std::vector<float>& expectedOutput);
+		std::vector<float> getOutputError(const std::vector<float>& expectedOutput) const;
+		float getNetError(const std::vector<float>& expectedOutput) const;
 
 	private:
-		void removePainter(CustomConnectedNeuralNetPainter* painter);
-		struct NetworkData
-		{
-			/// <summary>
-			/// ID - Instance pair
-			/// </summary>
-			std::unordered_map<NeuronID, Neuron*> neurons;
-
-			/// <summary>
-			/// Container for all connections
-			/// </summary>
-			std::vector<Connection*> connections;
-
-			/// <summary>
-			/// Same objects, but splitted into layers
-			/// </summary>
-			std::vector<Layer> layers;
-		};
+		void removePainter(Visualisation::CustomConnectedNeuralNetPainter* painter);
+		
 
 		NetworkData m_networkData;
 		std::vector<ConnectionInfo> m_buildingConnections;
@@ -106,8 +69,9 @@ namespace NeuralNet
 		std::vector<float> m_inputValues;
 		std::vector<float> m_outputValues;
 
-		std::vector<CustomConnectedNeuralNetPainter*> m_painters;
+		std::vector<Visualisation::CustomConnectedNeuralNetPainter*> m_painters;
 		
+		LearnAlgo::Backpropagation m_backProp;
 
 		class NEURAL_NET_EXPORT CustomConnectedNeuralNetBuilder
 		{
@@ -125,6 +89,10 @@ namespace NeuralNet
 
 		private:
 			static void splitIntoLayers(NetworkData& network);
+			static void removeDuplicateConnections(const std::vector<ConnectionInfo>& connectionsIn,
+				std::vector<ConnectionInfo>& connectionsOut);
+
+			static void sortLayers(NetworkData& network);
 
 			//static void splitIntoLayers(const std::vector<ConnectionInfo>& connections, std::vector<std::vector<ConnectionInfo>>& layers);
 			//static void BFS(const std::unordered_map<unsigned int, std::vector<unsigned int>>& adjacencyList, std::vector<std::vector<ConnectionInfo>>& layers);

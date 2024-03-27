@@ -1,5 +1,6 @@
 #include "SimpleImpl/Nets/CustomConnectedNeuralNet.h"
 #include "SimpleImpl/NetworkComponents/InputNeuron.h"
+#include "Visualisation/CustomConnectedNeuralNetPainter.h"
 
 namespace NeuralNet
 {
@@ -13,7 +14,7 @@ namespace NeuralNet
 
 	CustomConnectedNeuralNet::~CustomConnectedNeuralNet()
 	{
-		std::vector<CustomConnectedNeuralNetPainter*> painters = m_painters;
+		std::vector<Visualisation::CustomConnectedNeuralNetPainter*> painters = m_painters;
 		m_painters.clear();
 		for (auto painter : painters)
 		{
@@ -28,7 +29,7 @@ namespace NeuralNet
 		m_networkBuilt = false;
 		m_buildingConnections.push_back(connectionInfo);
 	}
-	void CustomConnectedNeuralNet::addConnection(NeuronID fromNeuronID, NeuronID toNeuronID, float weight)
+	void CustomConnectedNeuralNet::addConnection(Neuron::ID fromNeuronID, Neuron::ID toNeuronID, float weight)
 	{
 		m_networkBuilt = false;
 		ConnectionInfo info;
@@ -47,6 +48,10 @@ namespace NeuralNet
 	{
 		CustomConnectedNeuralNetBuilder::buildNetwork(m_buildingConnections, getInputCount(), getOutputCount(), m_networkData);
 		m_networkBuilt = true;
+		for (auto painter : m_painters)
+		{
+			painter->buildNetwork();
+		}
 	}
 	void CustomConnectedNeuralNet::destroyNetwork()
 	{
@@ -81,6 +86,54 @@ namespace NeuralNet
 			return m_outputValues[index];
 		return 0.0f;
 	
+	}
+
+	Neuron* CustomConnectedNeuralNet::getNeuron(Neuron::ID id)
+	{
+		auto it = m_networkData.neurons.find(id);
+		if (it != m_networkData.neurons.end())
+		{
+			return it->second;
+		}
+		return nullptr;
+	}
+
+	Activation::Type CustomConnectedNeuralNet::getActivationType(Neuron::ID id) const
+	{
+		const auto it = m_networkData.neurons.find(id);
+		if (it != m_networkData.neurons.end())
+		{
+			return it->second->getActivationType();
+		}
+		return Activation::Type::linear;
+	}
+	void CustomConnectedNeuralNet::setActivationType(Neuron::ID id, Activation::Type type) const
+	{
+		auto it = m_networkData.neurons.find(id);
+		if (it != m_networkData.neurons.end())
+		{
+			it->second->setActivationType(type);
+		}
+	}
+	void CustomConnectedNeuralNet::setLayerActivationType(unsigned int layerIdx, Activation::Type type) const
+	{
+		if (layerIdx < m_networkData.layers.size())
+		{
+			for (auto& neuron : m_networkData.layers[layerIdx].neurons)
+			{
+				neuron->setActivationType(type);
+			}
+		}
+	}
+	void CustomConnectedNeuralNet::setActivationType(Activation::Type type) const
+	{
+		for (auto& layer : m_networkData.layers)
+		{
+			for (auto& neuron : layer.neurons)
+			{
+				neuron->setActivationType(type);
+			}
+		}
 	}
 
 	void CustomConnectedNeuralNet::update()
@@ -121,14 +174,46 @@ namespace NeuralNet
 		}
 	}
 
-	CustomConnectedNeuralNet::CustomConnectedNeuralNetPainter* CustomConnectedNeuralNet::createVisualisation()
+	Visualisation::CustomConnectedNeuralNetPainter* CustomConnectedNeuralNet::createVisualisation()
 	{
-		CustomConnectedNeuralNetPainter* painter = new CustomConnectedNeuralNetPainter(this);
+		Visualisation::CustomConnectedNeuralNetPainter* painter = new Visualisation::CustomConnectedNeuralNetPainter(this);
 		m_painters.push_back(painter);
+		painter->buildNetwork();
 		return painter;
 	}
 
-	void CustomConnectedNeuralNet::removePainter(CustomConnectedNeuralNetPainter* painter)
+	void CustomConnectedNeuralNet::learn(const std::vector<float>& expectedOutput)
+	{
+		if (expectedOutput.size() != getOutputCount())
+			return;
+		m_backProp.learn(m_networkData.layers, expectedOutput);
+	}
+	std::vector<float> CustomConnectedNeuralNet::getOutputError(const std::vector<float>& expectedOutput) const
+	{
+		if (expectedOutput.size() != getOutputCount())
+			return std::vector<float>();
+		std::vector<float> err(getOutputCount(), 0);
+		for (size_t i = 0; i < getOutputCount(); ++i)
+		{
+			err[i] = m_backProp.getError(getOutputValue(i), expectedOutput[i]);
+		}
+		return err;
+	}
+	float CustomConnectedNeuralNet::getNetError(const std::vector<float>& expectedOutput) const
+	{
+		if (expectedOutput.size() != getOutputCount())
+			return 0;
+		float netError = 0;
+		for (size_t i = 0; i < getOutputCount(); ++i)
+		{
+			float diff = m_backProp.getError(getOutputValue(i), expectedOutput[i]);
+			netError += diff * diff;
+		}
+		netError /= getOutputCount();
+		return netError;
+	}
+
+	void CustomConnectedNeuralNet::removePainter(Visualisation::CustomConnectedNeuralNetPainter* painter)
 	{
 		auto it = std::find(m_painters.begin(), m_painters.end(), painter);
 		if(it != m_painters.end())

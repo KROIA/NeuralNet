@@ -31,8 +31,8 @@ private:
 	{
 		TEST_START(results);
 
-		NeuralNet::InputNeuron neuron1;
-		NeuralNet::Neuron neuron2;
+		NeuralNet::InputNeuron neuron1(1);
+		NeuralNet::Neuron neuron2(2);
 
 		NeuralNet::Connection connection(&neuron1, &neuron2, 0.5f);
 		

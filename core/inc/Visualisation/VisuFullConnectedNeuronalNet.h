@@ -33,22 +33,7 @@ namespace NeuralNet
 				}
 
 				void drawComponent(sf::RenderTarget& target, sf::RenderStates states) const override;
-				sf::Color signalColor(float value) const
-				{
-					value = m_visu->m_signalSatturation * value;
-					return QSFML::Color::lerpLinear({ m_lowValueColor, m_mediumValueColor, m_highValueColor }, (value + 1.f) / 2.f);
-				}
-				float signalWidth(float weight) const
-				{
-					weight = sqrt(std::abs(weight * m_visu->m_connectionWidth));
-					if(weight < 1)
-						return 1;
-					return weight;
-				}
 				VisuFullConnectedNeuronalNet* m_visu;
-				sf::Color m_lowValueColor = sf::Color::Red;
-				sf::Color m_mediumValueColor = sf::Color(150,150,150);
-				sf::Color m_highValueColor = sf::Color::Green;
 			};
 
 

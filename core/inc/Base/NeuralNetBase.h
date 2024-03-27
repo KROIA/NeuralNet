@@ -8,6 +8,7 @@ namespace NeuralNet
 	class NEURAL_NET_EXPORT NeuralNetBase
 	{
 	public:
+
 		NeuralNetBase(unsigned int inputs, unsigned int outputs)
 			: m_inputs(inputs)
 			, m_outputs(outputs)

@@ -13,59 +13,17 @@ namespace NeuralNet
 		// Clear old network
 		destroyNetwork(network);
 
-		std::unordered_map<NeuronID, Neuron*> &neurons = network.neurons;
+		std::vector<ConnectionInfo> uniqueConnections;
+		removeDuplicateConnections(connections, uniqueConnections);
+
+		std::unordered_map<Neuron::ID, Neuron*> &neurons = network.neurons;
 		std::vector<Connection*> &connectionsOut = network.connections;
-//		std::vector<Layer> &layers = network.layers;
-
-		//std::vector<std::vector<ConnectionInfo>> layeredConnections;
-		//splitIntoLayers(connections, layeredConnections);
-		
-		// Check which neuron IDs are needed and create them
-		/*layers.resize(layeredConnections.size());
-		for (size_t i = 0; i < layeredConnections.size(); ++i)
-		{
-			std::vector<ConnectionInfo> &layerConnections = layeredConnections[i];
-			Layer &layer = layers[i];
-			std::vector<Neuron*> &layerNeurons = layer.neurons;
-			std::vector<Connection*> &layerInputConnections = layer.inputConnections;
-
-			layerNeurons.reserve(layerConnections.size());
-			layerInputConnections.reserve(layerConnections.size());
-			for (auto& connection : layerConnections)
-			{
-				if (i == 0)
-				{
-					if (neurons.find(connection.fromNeuronID) == neurons.end())
-					{
-						InputNeuron *n = new InputNeuron();
-						neurons[connection.fromNeuronID] = n;
-						layerNeurons.push_back(n);
-					}
-					if (neurons.find(connection.toNeuronID) == neurons.end())
-					{
-						InputNeuron* n = new InputNeuron();
-						neurons[connection.toNeuronID] = new InputNeuron();
-						layerNeurons.push_back(n);
-					}
-						
-				}
-				else
-				{
-					if (neurons.find(connection.fromNeuronID) == neurons.end())
-						neurons[connection.fromNeuronID] = new Neuron();
-					if (neurons.find(connection.toNeuronID) == neurons.end())
-						neurons[connection.toNeuronID] = new Neuron();
-				}
-				
-			}
-			
-		}*/
 
 
 
-		std::unordered_map<NeuronID, bool> ids;
-		ids.reserve(connections.size());
-		for (auto& connection : connections)
+		std::unordered_map<Neuron::ID, bool> ids;
+		ids.reserve(uniqueConnections.size());
+		for (auto& connection : uniqueConnections)
 		{
 			if (ids.find(connection.fromNeuronID) == ids.end())
 			{
@@ -76,7 +34,7 @@ namespace NeuralNet
 				ids[connection.toNeuronID] = true;
 			}
 		}
-		std::vector<NeuronID> sortedIds;
+		std::vector<Neuron::ID> sortedIds;
 		sortedIds.reserve(ids.size());
 		for (auto& id : ids)
 		{
@@ -84,8 +42,8 @@ namespace NeuralNet
 		}
 		std::sort(sortedIds.begin(), sortedIds.end());
 
-		std::unordered_map<NeuronID, bool> inputNeurons;
-		std::unordered_map<NeuronID, bool> outputNeurons;
+		std::unordered_map<Neuron::ID, bool> inputNeurons;
+		std::unordered_map<Neuron::ID, bool> outputNeurons;
 
 		// get the first N neuron IDs as input neurons
 		for (unsigned int i = 0; i < inputCount; ++i)
@@ -102,26 +60,27 @@ namespace NeuralNet
 
 
 		// Create neurons
-		for (auto& connection : connections)
+
+		for (auto& connection : uniqueConnections)
 		{
 			if (neurons.find(connection.fromNeuronID) == neurons.end())
 			{
 				if (inputNeurons.find(connection.fromNeuronID) != inputNeurons.end())
 				{
-					neurons[connection.fromNeuronID] = new InputNeuron();
+					neurons[connection.fromNeuronID] = new InputNeuron(connection.fromNeuronID);
 				}
 				else
 				{
-					neurons[connection.fromNeuronID] = new Neuron();
+					neurons[connection.fromNeuronID] = new Neuron(connection.fromNeuronID);
 				}
 			}
 			if(neurons.find(connection.toNeuronID) == neurons.end())
-				neurons[connection.toNeuronID] = new Neuron();
+				neurons[connection.toNeuronID] = new Neuron(connection.toNeuronID);
 		}
 
 		// Create connections
-		connectionsOut.reserve(connections.size());
-		for (auto& connection : connections)
+		connectionsOut.reserve(uniqueConnections.size());
+		for (auto& connection : uniqueConnections)
 		{
 			Connection* conn = new Connection(neurons[connection.fromNeuronID], neurons[connection.toNeuronID], connection.weight);
 			connectionsOut.push_back(conn);
@@ -129,7 +88,7 @@ namespace NeuralNet
 
 		splitIntoLayers(network);
 
-
+		
 		Layer lastLayer = network.layers[network.layers.size() - 1];
 		if (lastLayer.neurons.size() != outputNeurons.size())
 		{
@@ -138,7 +97,7 @@ namespace NeuralNet
 			Layer newOutputLayer;
 			for (auto& it : outputNeurons)
 			{
-				NeuronID id = it.first;
+				Neuron::ID id = it.first;
 				for (int i = 0; i < lastLayer.neurons.size(); ++i)
 				{
 					if (lastLayer.neurons[i] == network.neurons[id])
@@ -169,7 +128,9 @@ namespace NeuralNet
 			network.layers.push_back(newSecondlastLayer);
 			network.layers.push_back(newOutputLayer);
 		}
-	}
+	
+		sortLayers(network);
+}
 
 	void CustomConnectedNeuralNet::CustomConnectedNeuralNetBuilder::destroyNetwork(
 		NetworkData& network)
@@ -190,7 +151,7 @@ namespace NeuralNet
 		const NetworkData& network,
 		std::vector<ConnectionInfo>& connectionInfos)
 	{
-		std::unordered_map<Neuron*, NeuronID> neuronIDs;
+		std::unordered_map<Neuron*, Neuron::ID> neuronIDs;
 		for (auto& neuron : network.neurons)
 			neuronIDs[neuron.second] = neuron.first;
 
@@ -199,7 +160,7 @@ namespace NeuralNet
 		for (auto& connection : network.connections)
 		{
 			ConnectionInfo info;
-			NeuronID fromID, toID;
+			Neuron::ID fromID, toID;
 
 			auto fromIDIt = neuronIDs.find(connection->getStartNeuron());
 			auto toIDIt = neuronIDs.find(connection->getEndNeuron());
@@ -220,13 +181,87 @@ namespace NeuralNet
 
 		struct NeuronInfo
 		{
-			NeuronID id;
+			Neuron::ID id;
 			bool visited = false;
 		};
+		size_t visitedCount = 0;
 		std::unordered_map<Neuron*, NeuronInfo> neuronIDs;
 		for (auto& neuron : network.neurons)
 			neuronIDs[neuron.second].id = neuron.first;
 
+		std::unordered_map<Neuron*, Neuron*> potentialNextLayer;
+
+		// Search input neurons
+		for (const auto& neuronPair : network.neurons) {
+			Neuron* neuron = neuronPair.second;
+			bool hasInput = false;
+			for (const auto& connection : network.connections) {
+				if (connection->getEndNeuron() == neuron) {
+					hasInput = true;
+					break;
+				}
+			}
+			if (!hasInput) {
+				potentialNextLayer[neuron] = neuron;
+				//neuronIDs[neuron].visited = true;
+			}
+		}
+
+		while (visitedCount < neuronIDs.size())
+		{
+			std::unordered_map<Neuron*, Neuron*> potentialCurrentLayer = potentialNextLayer;
+			std::unordered_map<Neuron*, Neuron*> visitedNeurons;
+			//potentialNextLayer.clear();
+			Layer layer;
+
+			for (const auto &currentNeuronIt : potentialCurrentLayer)
+			{
+				bool allInputsVisited = true;
+				Neuron* currentNeuron = currentNeuronIt.first;
+				const std::vector<Connection*> &inputConnections = currentNeuron->getInputConnections();
+				for (const auto& connection : inputConnections)
+				{
+					Neuron* inputNeuron = connection->getStartNeuron();
+					NeuronInfo &info = neuronIDs[inputNeuron];
+					if (!info.visited)
+					{
+						allInputsVisited = false;
+						break;
+					}
+				}
+
+				if (allInputsVisited)
+				{
+					visitedNeurons[currentNeuron] = currentNeuron;
+
+					layer.neurons.push_back(currentNeuron);
+					layer.inputConnections.insert(layer.inputConnections.end(), inputConnections.begin(), inputConnections.end());
+				
+					// Search for petential next layer neurons
+					for (const auto& connection : network.connections)
+					{
+						if (connection->getStartNeuron() == currentNeuron)
+						{
+							Neuron* nextNeuron = connection->getEndNeuron();
+							if (!neuronIDs[nextNeuron].visited)
+							{
+								if(potentialNextLayer.find(nextNeuron) == potentialNextLayer.end())
+									potentialNextLayer[nextNeuron] = nextNeuron;
+							}
+						}
+					}
+				}
+			}
+
+			network.layers.push_back(layer);
+
+			visitedCount += visitedNeurons.size();
+			for (auto& neuron : visitedNeurons)
+			{
+				neuronIDs[neuron.first].visited = true;
+				potentialNextLayer.erase(neuron.first);
+			}
+		}
 
 
 		/* // Clear any existing layers
@@ -235,12 +270,12 @@ namespace NeuralNet
 		// Initialize a queue for BFS
 		std::queue<Neuron*> neuronQueue;
 
-		std::unordered_map<Neuron*, NeuronID> neuronIDs;
+		std::unordered_map<Neuron*, Neuron::ID> Neuron::IDs;
 		for (auto& neuron : network.neurons)
-			neuronIDs[neuron.second] = neuron.first;
+			Neuron::IDs[neuron.second] = neuron.first;
 
 		// Mark all neurons as unvisited
-		std::unordered_map<NeuronID, bool> visited;
+		std::unordered_map<Neuron::ID, bool> visited;
 		for (const auto& neuronPair : network.neurons) {
 			visited[neuronPair.first] = false;
 		}
@@ -262,7 +297,7 @@ namespace NeuralNet
 		}
 
 		// Map to store the layer index for each neuron
-		std::unordered_map<NeuronID, size_t> neuronLayerMap;
+		std::unordered_map<Neuron::ID, size_t> neuronLayerMap;
 
 		// Perform BFS to split neurons into layers
 		size_t currentLayerIndex = 0;
@@ -273,12 +308,12 @@ namespace NeuralNet
 				Neuron* currentNeuron = neuronQueue.front();
 				neuronQueue.pop();
 				layer.neurons.push_back(currentNeuron);
-				neuronLayerMap[neuronIDs[currentNeuron]] = currentLayerIndex;
+				neuronLayerMap[Neuron::IDs[currentNeuron]] = currentLayerIndex;
 
 				// Add input connections to the current layer
 				for (Connection* connection : network.connections) {
 					if (connection->getEndNeuron() == currentNeuron) {
-						if (neuronLayerMap[neuronIDs[connection->getStartNeuron()]] < currentLayerIndex) {
+						if (neuronLayerMap[Neuron::IDs[connection->getStartNeuron()]] < currentLayerIndex) {
 							// Input neuron belongs to a previous layer, add connection to current layer
 							layer.inputConnections.push_back(connection);
 						}
@@ -286,9 +321,9 @@ namespace NeuralNet
 					if (connection->getStartNeuron() == currentNeuron) {
 						Neuron* inputNeuron = connection->getEndNeuron();
 						// Add input neuron to queue if not visited yet
-						if (!visited[neuronIDs[inputNeuron]]) {
+						if (!visited[Neuron::IDs[inputNeuron]]) {
 							neuronQueue.push(inputNeuron);
-							visited[neuronIDs[inputNeuron]] = true;
+							visited[Neuron::IDs[inputNeuron]] = true;
 						}
 					}
 				}
@@ -302,12 +337,12 @@ namespace NeuralNet
 		// Initialize a queue for BFS
 		std::queue<Neuron*> neuronQueue;
 
-		std::unordered_map<Neuron*, NeuronID> neuronIDs;
+		std::unordered_map<Neuron*, Neuron::ID> Neuron::IDs;
 		for (auto& neuron : network.neurons)
-			neuronIDs[neuron.second] = neuron.first;
+			Neuron::IDs[neuron.second] = neuron.first;
 
 		// Mark all neurons as unvisited
-		std::unordered_map<NeuronID, bool> visited;
+		std::unordered_map<Neuron::ID, bool> visited;
 		for (const auto& neuronPair : network.neurons) 
 		{
 			visited[neuronPair.first] = false;
@@ -356,16 +391,44 @@ namespace NeuralNet
 					{
 						Neuron* inputNeuron = connection->getEndNeuron();
 						// Add input neuron to queue if not visited yet
-						if (!visited[neuronIDs[inputNeuron]])
+						if (!visited[Neuron::IDs[inputNeuron]])
 						{
 							neuronQueue.push(inputNeuron);
-							visited[neuronIDs[inputNeuron]] = true;
+							visited[Neuron::IDs[inputNeuron]] = true;
 						}
 					}
 				}
 			}
 			network.layers.push_back(layer);
 		}*/
+	}
+
+	void CustomConnectedNeuralNet::CustomConnectedNeuralNetBuilder::removeDuplicateConnections(
+		const std::vector<ConnectionInfo>& connectionsIn,
+		std::vector<ConnectionInfo>& connectionsOut)
+	{
+		std::unordered_map<std::string, ConnectionInfo> uniqueConnections;
+		for (const auto& connection : connectionsIn)
+		{
+			std::string key = std::to_string(connection.fromNeuronID) + "-" + std::to_string(connection.toNeuronID);
+			if (uniqueConnections.find(key) == uniqueConnections.end())
+				uniqueConnections[key] = connection;
+		}
+
+		connectionsOut.clear();
+		connectionsOut.reserve(uniqueConnections.size());
+		for (const auto& entry : uniqueConnections)
+			connectionsOut.push_back(entry.second);
+	}
+
+	void CustomConnectedNeuralNet::CustomConnectedNeuralNetBuilder::sortLayers(NetworkData& network)
+	{
+		for (auto& layer : network.layers)
+		{
+			std::sort(layer.neurons.begin(), layer.neurons.end(), [](Neuron* a, Neuron* b) {
+				return a->getID() < b->getID();
+			});
+		}
 	}
 
 	/*
@@ -401,14 +464,14 @@ namespace NeuralNet
 		}
 
 		while (!q.empty()) {
-			unsigned int currentNeuronID = q.front();
+			unsigned int currentNeuron::ID = q.front();
 			q.pop();
 
 			// Add neuron to the current layer
-			layers.back().push_back({ 0, currentNeuronID, 0.0f });
+			layers.back().push_back({ 0, currentNeuron::ID, 0.0f });
 
 			// Visit all neighbors of current neuron
-			for (unsigned int neighbor : adjacencyList.at(currentNeuronID)) {
+			for (unsigned int neighbor : adjacencyList.at(currentNeuron::ID)) {
 				if (!visited[neighbor]) {
 					visited[neighbor] = true;
 					q.push(neighbor);

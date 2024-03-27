@@ -1,4 +1,5 @@
 #include "Visualisation/VisuFullConnectedNeuronalNet.h"
+#include "Visualisation/Utilities.h"
 
 
 namespace NeuralNet
@@ -85,7 +86,7 @@ namespace NeuralNet
 			{
 				float neuronValue = m_net->getInputValue(i);
 				pointPainter.addPoint(sf::Vector2f(0, i * neuronSpacing), neuronRadius,
-					signalColor(neuronValue));
+					Utilities::signalColor(m_visu->m_signalSatturation*neuronValue));
 			}
 
 			for (unsigned int x = 0; x < hiddenLayerCount; x++)
@@ -94,7 +95,7 @@ namespace NeuralNet
 				{
 					float neuronValue = m_net->getHiddenValue(x, y);
 					pointPainter.addPoint(sf::Vector2f(layerSpacing + x * layerSpacing, y * neuronSpacing), neuronRadius,
-						signalColor(neuronValue));
+						Utilities::signalColor(m_visu->m_signalSatturation*neuronValue));
 				}
 			}
 
@@ -102,7 +103,7 @@ namespace NeuralNet
 			{
 				float neuronValue = m_net->getOutputValue(i);
 				pointPainter.addPoint(sf::Vector2f((hiddenLayerCount +1)* layerSpacing, i * neuronSpacing), neuronRadius,
-					signalColor(neuronValue));
+					Utilities::signalColor(m_visu->m_signalSatturation*neuronValue));
 			}
 
 			// Draw connections
@@ -117,7 +118,8 @@ namespace NeuralNet
 						float signalValue = m_net->getInputValue(z);
 						linePainter.addLine(sf::Vector2f(xOffset, z * neuronSpacing),
 							sf::Vector2f(xOffset + layerSpacing, y * neuronSpacing),
-							signalColor(weight* signalValue), signalWidth(weight));
+							Utilities::signalColor(weight* signalValue* m_visu->m_signalSatturation), 
+							Utilities::signalWidth(weight * m_visu->m_connectionWidth));
 					}
 				}
 
@@ -132,7 +134,8 @@ namespace NeuralNet
 							float signalValue = m_net->getHiddenValue(x - 1, z);
 							linePainter.addLine(sf::Vector2f(xOffset + x * layerSpacing, z * neuronSpacing),
 								sf::Vector2f(xOffset + (x + 1) * layerSpacing, y * neuronSpacing),
-								signalColor(weight* signalValue), signalWidth(weight));
+								Utilities::signalColor(weight* signalValue* m_visu->m_signalSatturation), 
+								Utilities::signalWidth(weight * m_visu->m_connectionWidth));
 						}
 					}
 				}
@@ -145,7 +148,8 @@ namespace NeuralNet
 						float signalValue = m_net->getHiddenValue(hiddenLayerCount - 1, z);
 						linePainter.addLine(sf::Vector2f(xOffset + hiddenLayerCount * layerSpacing, z * neuronSpacing),
 							sf::Vector2f(xOffset + (hiddenLayerCount + 1) * layerSpacing, y * neuronSpacing),
-							signalColor(weight* signalValue), signalWidth(weight));
+							Utilities::signalColor(weight* signalValue* m_visu->m_signalSatturation), 
+							Utilities::signalWidth(weight * m_visu->m_connectionWidth));
 					}
 				}
 			}
@@ -158,8 +162,9 @@ namespace NeuralNet
 						float weight = m_net->getWeight(0, y, z);
 						float signalValue = m_net->getInputValue(z);
 						linePainter.addLine(sf::Vector2f(xOffset, z * neuronSpacing),
-														sf::Vector2f(xOffset + layerSpacing, y * neuronSpacing),
-														signalColor(weight* signalValue), signalWidth(weight));
+							sf::Vector2f(xOffset + layerSpacing, y * neuronSpacing),
+							Utilities::signalColor(weight* signalValue* m_visu->m_signalSatturation), 
+							Utilities::signalWidth(weight * m_visu->m_connectionWidth));
 					}
 				}
 			}

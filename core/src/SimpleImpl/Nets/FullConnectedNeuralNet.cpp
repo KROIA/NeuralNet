@@ -60,6 +60,19 @@ namespace NeuralNet
 		return 0.0f;
 	}
 
+	Neuron* FullConnectedNeuralNet::getNeuron(Neuron::ID id)
+	{
+		for (auto& layer : m_layers)
+		{
+			for (auto& neuron : layer.neurons)
+			{
+				if (neuron->getID() == id)
+					return neuron;
+			}
+		}
+		return nullptr;
+	}
+
 	void FullConnectedNeuralNet::update()
 	{
 		if (m_layers.size() < 2)
@@ -111,19 +124,19 @@ namespace NeuralNet
 
 		return weights;
 	}
-	float FullConnectedNeuralNet::getWeight(unsigned int layerIdx, unsigned int neuronIdx, unsigned int inputIdx) const
+	float FullConnectedNeuralNet::getWeight(unsigned int layerIdx, unsigned int neuronIDx, unsigned int inputIdx) const
 	{
 		layerIdx++; // Skip the input layer
 		if (layerIdx > m_hiddenLayerCount+1)
 			return 0.0f;
 		if (m_hiddenLayerCount == 0)
 		{
-			if (neuronIdx >= getOutputCount())
+			if (neuronIDx >= getOutputCount())
 				return 0.0f;
 		}
 		else
 		{
-			if (neuronIdx >= m_hiddenLayerSize)
+			if (neuronIDx >= m_hiddenLayerSize)
 				return 0.0f;
 		}
 
@@ -144,14 +157,14 @@ namespace NeuralNet
 		{
 			if(m_hiddenLayerCount == 0)
 			{ 
-				offset = neuronIdx * getOutputCount();
+				offset = neuronIDx * getOutputCount();
 			}
 			else
-				offset = neuronIdx * getInputCount();
+				offset = neuronIDx * getInputCount();
 		}
 		else
 		{
-			offset = neuronIdx * m_hiddenLayerSize;
+			offset = neuronIDx * m_hiddenLayerSize;
 		}
 		return m_layers[layerIdx].inputConnections[offset + inputIdx]->getWeight();
 	}
@@ -170,46 +183,46 @@ namespace NeuralNet
 			}
 		}
 	}
-	void FullConnectedNeuralNet::setWeight(unsigned int layerIdx, unsigned int neuronIdx, unsigned int inputIdx, float weight)
+	void FullConnectedNeuralNet::setWeight(unsigned int layerIdx, unsigned int neuronIDx, unsigned int inputIdx, float weight)
 	{
 		layerIdx++; // Skip the input layer
 		if (layerIdx > m_hiddenLayerCount)
 			return;
-		if (neuronIdx >= m_hiddenLayerSize)
+		if (neuronIDx >= m_hiddenLayerSize)
 			return;
 		if (inputIdx >= getInputCount())
 			return;
 		unsigned int offset = 0;
 		if (layerIdx == 1)
 		{
-			offset = neuronIdx * getInputCount();
+			offset = neuronIDx * getInputCount();
 		}
 		else
 		{
 			offset = m_hiddenLayerSize * getInputCount() + 
 				(layerIdx - 2) * m_hiddenLayerSize * m_hiddenLayerSize + 
-				neuronIdx * m_hiddenLayerSize;
+				neuronIDx * m_hiddenLayerSize;
 		}
 		m_layers[layerIdx].inputConnections[offset + inputIdx]->setWeight(weight);
 	}
 
-	Activation::Type FullConnectedNeuralNet::getActivationType(unsigned int layerIdx, unsigned int neuronIdx) const
+	Activation::Type FullConnectedNeuralNet::getActivationType(unsigned int layerIdx, unsigned int neuronIDx) const
 	{
 		layerIdx++; // Skip the input layer
 		if (layerIdx >= m_layers.size())
 			return Activation::Type::linear;
-		if (neuronIdx >= m_layers[layerIdx].neurons.size())
+		if (neuronIDx >= m_layers[layerIdx].neurons.size())
 			return Activation::Type::linear;
-		return m_layers[layerIdx].neurons[neuronIdx]->getActivationType();
+		return m_layers[layerIdx].neurons[neuronIDx]->getActivationType();
 	}
-	void FullConnectedNeuralNet::setActivationType(unsigned int layerIdx, unsigned int neuronIdx, Activation::Type type) const
+	void FullConnectedNeuralNet::setActivationType(unsigned int layerIdx, unsigned int neuronIDx, Activation::Type type) const
 	{
 		layerIdx++; // Skip the input layer
 		if (layerIdx >= m_layers.size())
 			return;
-		if (neuronIdx >= m_layers[layerIdx].neurons.size())
+		if (neuronIDx >= m_layers[layerIdx].neurons.size())
 			return;
-		m_layers[layerIdx].neurons[neuronIdx]->setActivationType(type);	
+		m_layers[layerIdx].neurons[neuronIDx]->setActivationType(type);	
 	}
 	void FullConnectedNeuralNet::setActivationType(unsigned int layerIdx, Activation::Type type) const
 	{
@@ -231,20 +244,21 @@ namespace NeuralNet
 			}
 		}
 	}
+	
 	float FullConnectedNeuralNet::getInputValue(unsigned int index) const
 	{
 		if(index < getInputCount())
 			return m_inputValues[index];
 		return 0.0f;
 	}
-	float FullConnectedNeuralNet::getHiddenValue(unsigned int layerIdx, unsigned int neuronIdx) const 
+	float FullConnectedNeuralNet::getHiddenValue(unsigned int layerIdx, unsigned int neuronIDx) const 
 	{
 		layerIdx++; // Skip the input layer
 		if (layerIdx >= m_layers.size())
 			return 0.0f;
-		if (neuronIdx >= m_layers[layerIdx].neurons.size())
+		if (neuronIDx >= m_layers[layerIdx].neurons.size())
 			return 0.0f;
-		return m_layers[layerIdx].neurons[neuronIdx]->getOutput();
+		return m_layers[layerIdx].neurons[neuronIDx]->getOutput();
 	}
 
 	void FullConnectedNeuralNet::learn(const std::vector<float>& expectedOutput)
@@ -285,6 +299,7 @@ namespace NeuralNet
 		return visu;
 	}
 
+
 	void FullConnectedNeuralNet::buildNetwork()
 	{
 		destroyNetwork();
@@ -297,9 +312,10 @@ namespace NeuralNet
 		// Create the input layer
 		Layer& inputLayer = m_layers[0];
 		inputLayer.neurons.resize(getInputCount());
+		Neuron::ID idCounter = 0;
 		for (unsigned int i = 0; i < getInputCount(); ++i)
 		{
-			inputLayer.neurons[i] = new InputNeuron();
+			inputLayer.neurons[i] = new InputNeuron(idCounter++);
 		}
 		for (unsigned int i = 1; i < m_hiddenLayerCount+1; ++i)
 		{
@@ -307,7 +323,7 @@ namespace NeuralNet
 			layer.neurons.resize(m_hiddenLayerSize);
 			for (unsigned int j = 0; j < m_hiddenLayerSize; ++j)
 			{
-				layer.neurons[j] = new Neuron();
+				layer.neurons[j] = new Neuron(idCounter++);
 			}
 		}
 		
@@ -349,7 +365,7 @@ namespace NeuralNet
 		outputLayer.neurons.resize(getOutputCount());
 		for (unsigned int i = 0; i < getOutputCount(); ++i)
 		{
-			outputLayer.neurons[i] = new Neuron();
+			outputLayer.neurons[i] = new Neuron(idCounter++);
 		}
 		for (auto& receivingNeuron : outputLayer.neurons)
 		{

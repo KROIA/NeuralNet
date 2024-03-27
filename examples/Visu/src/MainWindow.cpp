@@ -47,6 +47,7 @@ void MainWindow::setupCanvas()
     m_canvas = new Canvas(ui->canvasWidget, settings);
 
     DefaultEditor* defaultEditor = new DefaultEditor();
+    defaultEditor->getCamera()->setMinZoom(0.01);
     m_canvas->addObject(defaultEditor);
     qDebug() << defaultEditor->toString().c_str();
 
@@ -68,21 +69,32 @@ void MainWindow::setupCanvas()
 
 
     m_customNet = new NeuralNet::CustomConnectedNeuralNet(3, 1);
+
+    // m_customNet->addConnection(0, 3, 1);
+    // m_customNet->addConnection(1, 3, 1);
+    // m_customNet->addConnection(2, 3, -1);
     m_customNet->addConnection(0, 3, 1);
+    m_customNet->addConnection(0, 4, 1);
     m_customNet->addConnection(1, 3, 1);
     m_customNet->addConnection(2, 3, 1);
 
-    m_customNet->addConnection(2, 4, 1);
+    m_customNet->addConnection(2, 4, -1);
     m_customNet->addConnection(1, 4, 1);
-    m_customNet->addConnection(3, 4, 1);
+   // m_customNet->addConnection(3, 4, 1);
     m_customNet->addConnection(3, 5, 1);
+    m_customNet->addConnection(4, 5, 1);
+    m_customNet->addConnection(1, 5, 1);
     m_customNet->buildNetwork();
+    m_customNet->setActivationType(NeuralNet::Activation::Type::gaussian);
+    m_customNet->setActivationType(5, NeuralNet::Activation::Type::tanh_);
+    m_customNet->setActivationType(3, NeuralNet::Activation::Type::relu);
     m_customNet->setInputValues({ -1, 0.5, 1 });
     m_customNet->update();
 
     QSFML::Objects::CanvasObject* customVisuNet = new QSFML::Objects::CanvasObject("CustomConnectedNeuralNet");
     customVisuNet->setPosition(sf::Vector2f(50, 300));
-    customVisuNet->addComponent(m_customNet->createVisualisation());
+    NeuralNet::Visualisation::CustomConnectedNeuralNetPainter* customPainter = m_customNet->createVisualisation();
+    customVisuNet->addComponent((QSFML::Components::Component*)customPainter);
     m_canvas->addObject(customVisuNet);
 
 }
@@ -101,9 +113,15 @@ void MainWindow::onTimerFinish()
     TrainingSample& trainSample = m_trainingData[currentExampleIndex];
     m_net->setInputValues(trainSample.inputs);
     m_net->update();
-    float netError = m_net->getNetError(trainSample.expectedOutput);
+    float netError1 = m_net->getNetError(trainSample.expectedOutput);
     m_net->learn(trainSample.expectedOutput);
-    std::cout << netError << "\n";
+
+    m_customNet->setInputValues(trainSample.inputs);
+    m_customNet->update();
+    float netError2 = m_customNet->getNetError(trainSample.expectedOutput);
+    m_customNet->learn(trainSample.expectedOutput);
+
+    std::cout << netError1 << "\t" << netError2 << "\n";
 
     currentExampleIndex++;
     if (currentExampleIndex >= m_trainingData.size())
@@ -112,5 +130,14 @@ void MainWindow::onTimerFinish()
     static int counter = 0; 
     counter++;
     if (counter == 1000)
+    {
+        const auto netWeights = m_net->getWeights();
+        std::cout << "weights: ";
+        for (size_t i = 0; i < netWeights.size(); i++)
+        {
+			std::cout << netWeights[i] << "\t";
+		}
+        std::cout << "\n";
         m_timer.setInterval(1000);
+    }
 }

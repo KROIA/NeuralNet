@@ -7,12 +7,18 @@
 
 namespace NeuralNet
 {
+	namespace Visualisation
+	{
+		class NeuronPainter;
+	}
 	class Connection;
 	class NEURAL_NET_EXPORT Neuron
 	{
+		friend Visualisation::NeuronPainter;
 	public:
-		Neuron();
-		Neuron(Activation::Type &activationType);
+		using ID = unsigned int;
+		Neuron(ID id);
+		Neuron(ID id, Activation::Type &activationType);
 		Neuron(const Neuron &neuron);
 		Neuron(Neuron&& neuron) noexcept;
 		
@@ -48,7 +54,7 @@ namespace NeuralNet
 			return m_inputConnections;
 		}
 
-		void setActivationType(Activation::Type type)
+		virtual void setActivationType(Activation::Type type)
 		{
 			m_activationType = type;
 			m_activationFunction = Activation::getActivationFunction(type);
@@ -91,6 +97,13 @@ namespace NeuralNet
 		{
 			return m_netinput;
 		}
+
+		ID getID() const
+		{
+			return m_id;
+		}
+
+		Visualisation::NeuronPainter* createVisualisation();
 	protected:
 
 		void setOutput(float output)
@@ -102,6 +115,18 @@ namespace NeuralNet
 			m_netinput = netinput;
 		}
 
+		void removePainter(Visualisation::NeuronPainter* p)
+		{
+			for (auto it = m_painters.begin(); it != m_painters.end(); ++it)
+			{
+				if (*it == p)
+				{
+					m_painters.erase(it);
+					return;
+				}
+			}
+		}
+
 		
 		//std::vector<float> m_inputValues;
 		std::vector<Connection*> m_inputConnections;
@@ -109,6 +134,8 @@ namespace NeuralNet
 		float m_output = 0.f;
 		Activation::Type m_activationType = Activation::Type::linear;
 		Activation::ActivationFunction m_activationFunction;
+		ID m_id;
 
+		std::vector<Visualisation::NeuronPainter*> m_painters;
 	};
 }
