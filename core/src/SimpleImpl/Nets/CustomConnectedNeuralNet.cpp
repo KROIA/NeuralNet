@@ -75,44 +75,15 @@ namespace NeuralNet
 
 	void CustomConnectedNeuralNet::buildNetwork()
 	{
-		/*for (auto painter : m_painters)
-		{
-			painter->destroyNetwork();
-		}*/
-		/*for (const auto& connection : m_buildingConnections)
-		{
-			Neuron::ID fromID = connection.fromNeuronID;
-			Neuron::ID toID = connection.toNeuronID;
-			
-			auto it1 = m_activationFunctions.find(fromID);
-			auto it2 = m_activationFunctions.find(toID);
-
-			if (it1 == m_activationFunctions.end())
-			{
-				m_activationFunctions[fromID] = m_defaultActivationType;
-			}
-			if (it2 == m_activationFunctions.end())
-			{
-				m_activationFunctions[toID] = m_defaultActivationType;
-			}
-		}*/
-		CustomConnectedNeuralNetBuilder::buildNetwork(m_buildingConnections, m_activationFunctions, getInputCount(), getOutputCount(), m_networkData);
 		
-		/*for (size_t i = 0; i< m_networkData.layers.size(); ++i)
-		{
-			Layer& layer = m_networkData.layers[i];
-			for (auto& neuron : layer.neurons)
-			{
-				Neuron::ID id = neuron->getID();
-				auto it = m_activationFunctions.find(id);
-				if (it == m_activationFunctions.end())
-				{
-					
-				}
-			}
-		}*/
-
-		
+		CustomConnectedNeuralNetBuilder::buildNetwork(
+			m_buildingConnections, 
+			m_activationFunctions, 
+			m_defaultLayerActivationTypes,
+			m_defaultActivationType,
+			getInputCount(), 
+			getOutputCount(),
+			m_networkData);
 		m_networkBuilt = true;
 		for (auto painter : m_painters)
 		{
@@ -184,10 +155,6 @@ namespace NeuralNet
 	}
 	void CustomConnectedNeuralNet::setLayerActivationType(unsigned int layerIdx, Activation::Type type)
 	{
-		while (layerIdx <= m_defaultLayerActivationTypes.size())
-		{
-			m_defaultLayerActivationTypes.push_back(m_defaultActivationType);
-		}
 		m_defaultLayerActivationTypes[layerIdx] = type;
 		if (layerIdx < m_networkData.layers.size())
 		{

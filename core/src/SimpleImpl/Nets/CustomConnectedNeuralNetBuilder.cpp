@@ -6,7 +6,9 @@ namespace NeuralNet
 {
 	void CustomConnectedNeuralNet::CustomConnectedNeuralNetBuilder::buildNetwork(
 		const std::vector<ConnectionInfo>& connections,
-		const std::unordered_map<Neuron::ID, Activation::Type>& activationFunctions,
+		const std::unordered_map<Neuron::ID, Activation::Type>& activationFunctions, 
+		const std::unordered_map<unsigned int, Activation::Type>& defaultLayerActivationTypes,
+		Activation::Type defaultActivationType,
 		unsigned int inputCount, 
 		unsigned int outputCount,
 		NetworkData &network)
@@ -141,7 +143,23 @@ namespace NeuralNet
 		}
 	
 		sortLayers(network);
-}
+
+		// Set default activation types
+		for (size_t i=0; i<network.layers.size(); ++i)
+		{
+			Layer& layer = network.layers[i];
+			Activation::Type type = defaultActivationType;
+			const auto &it = defaultLayerActivationTypes.find(i);
+			if (it != defaultLayerActivationTypes.end())
+				type = it->second;
+			for (auto& neuron : layer.neurons)
+			{
+				const auto &it2 = activationFunctions.find(neuron->getID());
+				if(it2 == activationFunctions.end())
+					neuron->setActivationType(type);
+			}
+		}
+	}
 
 	void CustomConnectedNeuralNet::CustomConnectedNeuralNetBuilder::destroyNetwork(
 		NetworkData& network)

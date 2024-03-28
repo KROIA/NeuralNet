@@ -69,9 +69,11 @@ namespace NeuralNet
 
 		NetworkData m_networkData;
 		std::vector<ConnectionInfo> m_buildingConnections;
+
 		std::unordered_map<Neuron::ID, Activation::Type> m_activationFunctions;
-		std::vector<Activation::Type> m_defaultLayerActivationTypes;
+		std::unordered_map<unsigned int, Activation::Type> m_defaultLayerActivationTypes;
 		Activation::Type m_defaultActivationType;
+
 		bool m_networkBuilt = false;
 		std::vector<float> m_inputValues;
 		std::vector<float> m_outputValues;
@@ -86,6 +88,8 @@ namespace NeuralNet
 			static void buildNetwork(
 				const std::vector<ConnectionInfo>& connections, 
 				const std::unordered_map<Neuron::ID, Activation::Type>& activationFunctions,
+				const std::unordered_map<unsigned int, Activation::Type> &defaultLayerActivationTypes,
+				Activation::Type defaultActivationType,
 				unsigned int inputCount, 
 				unsigned int outputCount,
 				NetworkData &network);

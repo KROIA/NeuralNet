@@ -93,10 +93,10 @@ void MainWindow::setupCanvas()
    // m_customNet->addConnection(3, 5);
    // m_customNet->addConnection(4, 5);
    // m_customNet->addConnection(1, 5);
-    m_customNet->buildNetwork();
+    
     m_customNet->setActivationType(NeuralNet::Activation::Type::tanh_);
     m_customNet->setActivationType(3, NeuralNet::Activation::Type::gaussian);
-    
+    m_customNet->buildNetwork();
     
    /* m_customNet->setActivationType(3, NeuralNet::Activation::Type::sigmoid);
     m_customNet->setActivationType(4, NeuralNet::Activation::Type::relu);
