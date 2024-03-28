@@ -20,6 +20,7 @@ namespace NeuralNet
 			~CustomConnectedNeuralNetPainter();
 
 			void buildNetwork();
+			void destroyNetwork();
 		private:
 			void setCanvasParent(QSFML::Canvas* parent) override
 			{

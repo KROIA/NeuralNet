@@ -19,8 +19,9 @@ namespace NeuralNet
 			static float signalWidth(float weight)
 			{
 				weight = sqrt(std::abs(weight));
-				if (weight < 1)
-					return 1;
+				const float minW = 0.1f;
+				if (weight < minW)
+					return minW;
 				return weight;
 			}
 

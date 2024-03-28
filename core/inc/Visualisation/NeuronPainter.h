@@ -22,11 +22,11 @@ namespace NeuralNet
 
 			sf::Vector2f getOutputConnectionPoint() const
 			{
-				return getPosition() + sf::Vector2f(m_radius, 0);
+				return getPosition();// +sf::Vector2f(m_radius, 0);
 			}
 			sf::Vector2f getInputConnectionPoint() const
 			{
-				return getPosition();// - sf::Vector2f(m_radius, 0);
+				return getPosition();// -sf::Vector2f(m_radius, 0);
 			}
 
 			void setCanvasParent(QSFML::Canvas* parent) override

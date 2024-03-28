@@ -31,10 +31,14 @@ namespace NeuralNet
 		void clearConnections()
 		{
 			m_buildingConnections.clear();
+			m_activationFunctions.clear();
 		}
 		void addConnection(const ConnectionInfo& connectionInfo);
+		void addConnection(Neuron::ID fromNeuronID, Neuron::ID toNeuronID);
 		void addConnection(Neuron::ID fromNeuronID, Neuron::ID toNeuronID, float weight);
 		void setConnections(const std::vector<ConnectionInfo>& connections);
+		void removeConnection(Neuron::ID fromNeuronID, Neuron::ID toNeuronID);
+		std::vector<ConnectionInfo> getConnections() const;
 
 		void buildNetwork();
 		void destroyNetwork();
@@ -45,9 +49,9 @@ namespace NeuralNet
 		float getOutputValue(unsigned int index) const override;
 
 		Activation::Type getActivationType(Neuron::ID id) const;
-		void setActivationType(Neuron::ID id, Activation::Type type) const;
-		void setLayerActivationType(unsigned int layerIdx, Activation::Type type) const;
-		void setActivationType(Activation::Type type) const;
+		void setActivationType(Neuron::ID id, Activation::Type type);
+		void setLayerActivationType(unsigned int layerIdx, Activation::Type type);
+		void setActivationType(Activation::Type type);
 
 		Neuron* getNeuron(Neuron::ID id);
 
@@ -65,6 +69,9 @@ namespace NeuralNet
 
 		NetworkData m_networkData;
 		std::vector<ConnectionInfo> m_buildingConnections;
+		std::unordered_map<Neuron::ID, Activation::Type> m_activationFunctions;
+		std::vector<Activation::Type> m_defaultLayerActivationTypes;
+		Activation::Type m_defaultActivationType;
 		bool m_networkBuilt = false;
 		std::vector<float> m_inputValues;
 		std::vector<float> m_outputValues;
@@ -78,6 +85,7 @@ namespace NeuralNet
 		public:
 			static void buildNetwork(
 				const std::vector<ConnectionInfo>& connections, 
+				const std::unordered_map<Neuron::ID, Activation::Type>& activationFunctions,
 				unsigned int inputCount, 
 				unsigned int outputCount,
 				NetworkData &network);

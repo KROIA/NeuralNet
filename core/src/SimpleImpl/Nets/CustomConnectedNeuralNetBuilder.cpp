@@ -6,6 +6,7 @@ namespace NeuralNet
 {
 	void CustomConnectedNeuralNet::CustomConnectedNeuralNetBuilder::buildNetwork(
 		const std::vector<ConnectionInfo>& connections,
+		const std::unordered_map<Neuron::ID, Activation::Type>& activationFunctions,
 		unsigned int inputCount, 
 		unsigned int outputCount,
 		NetworkData &network)
@@ -76,6 +77,16 @@ namespace NeuralNet
 			}
 			if(neurons.find(connection.toNeuronID) == neurons.end())
 				neurons[connection.toNeuronID] = new Neuron(connection.toNeuronID);
+		}
+
+		// Activation functions override
+		for (auto& type : activationFunctions)
+		{
+			auto it = neurons.find(type.first);
+			if (it != neurons.end())
+			{
+				it->second->setActivationType(type.second);
+			}
 		}
 
 		// Create connections

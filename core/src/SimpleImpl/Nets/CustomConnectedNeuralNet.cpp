@@ -29,6 +29,10 @@ namespace NeuralNet
 		m_networkBuilt = false;
 		m_buildingConnections.push_back(connectionInfo);
 	}
+	void CustomConnectedNeuralNet::addConnection(Neuron::ID fromNeuronID, Neuron::ID toNeuronID)
+	{
+		addConnection(fromNeuronID, toNeuronID, QSFML::Utilities::RandomEngine::getFloat(-1, 1));
+	}
 	void CustomConnectedNeuralNet::addConnection(Neuron::ID fromNeuronID, Neuron::ID toNeuronID, float weight)
 	{
 		m_networkBuilt = false;
@@ -43,10 +47,72 @@ namespace NeuralNet
 		m_networkBuilt = false;
 		m_buildingConnections = connections;
 	}
+	void CustomConnectedNeuralNet::removeConnection(Neuron::ID fromNeuronID, Neuron::ID toNeuronID)
+	{
+		for (auto it = m_buildingConnections.begin(); it != m_buildingConnections.end(); ++it)
+		{
+			if (it->fromNeuronID == fromNeuronID && it->toNeuronID == toNeuronID)
+			{
+				m_buildingConnections.erase(it);
+				break;
+			}
+		}
+	}
+	std::vector<ConnectionInfo> CustomConnectedNeuralNet::getConnections() const
+	{
+		std::vector<ConnectionInfo> connections;
+		connections.reserve(m_networkData.connections.size());
+		for (auto& connection : m_networkData.connections)
+		{
+			ConnectionInfo info;
+			info.fromNeuronID = connection->getStartNeuron()->getID();
+			info.toNeuronID = connection->getEndNeuron()->getID();
+			info.weight = connection->getWeight();
+			connections.push_back(info);
+		}
+		return connections;
+	}
 
 	void CustomConnectedNeuralNet::buildNetwork()
 	{
-		CustomConnectedNeuralNetBuilder::buildNetwork(m_buildingConnections, getInputCount(), getOutputCount(), m_networkData);
+		/*for (auto painter : m_painters)
+		{
+			painter->destroyNetwork();
+		}*/
+		/*for (const auto& connection : m_buildingConnections)
+		{
+			Neuron::ID fromID = connection.fromNeuronID;
+			Neuron::ID toID = connection.toNeuronID;
+			
+			auto it1 = m_activationFunctions.find(fromID);
+			auto it2 = m_activationFunctions.find(toID);
+
+			if (it1 == m_activationFunctions.end())
+			{
+				m_activationFunctions[fromID] = m_defaultActivationType;
+			}
+			if (it2 == m_activationFunctions.end())
+			{
+				m_activationFunctions[toID] = m_defaultActivationType;
+			}
+		}*/
+		CustomConnectedNeuralNetBuilder::buildNetwork(m_buildingConnections, m_activationFunctions, getInputCount(), getOutputCount(), m_networkData);
+		
+		/*for (size_t i = 0; i< m_networkData.layers.size(); ++i)
+		{
+			Layer& layer = m_networkData.layers[i];
+			for (auto& neuron : layer.neurons)
+			{
+				Neuron::ID id = neuron->getID();
+				auto it = m_activationFunctions.find(id);
+				if (it == m_activationFunctions.end())
+				{
+					
+				}
+			}
+		}*/
+
+		
 		m_networkBuilt = true;
 		for (auto painter : m_painters)
 		{
@@ -107,26 +173,34 @@ namespace NeuralNet
 		}
 		return Activation::Type::linear;
 	}
-	void CustomConnectedNeuralNet::setActivationType(Neuron::ID id, Activation::Type type) const
+	void CustomConnectedNeuralNet::setActivationType(Neuron::ID id, Activation::Type type)
 	{
 		auto it = m_networkData.neurons.find(id);
 		if (it != m_networkData.neurons.end())
 		{
 			it->second->setActivationType(type);
 		}
+		m_activationFunctions[id] = type;
 	}
-	void CustomConnectedNeuralNet::setLayerActivationType(unsigned int layerIdx, Activation::Type type) const
+	void CustomConnectedNeuralNet::setLayerActivationType(unsigned int layerIdx, Activation::Type type)
 	{
+		while (layerIdx <= m_defaultLayerActivationTypes.size())
+		{
+			m_defaultLayerActivationTypes.push_back(m_defaultActivationType);
+		}
+		m_defaultLayerActivationTypes[layerIdx] = type;
 		if (layerIdx < m_networkData.layers.size())
 		{
 			for (auto& neuron : m_networkData.layers[layerIdx].neurons)
 			{
 				neuron->setActivationType(type);
+				m_activationFunctions[neuron->getID()] = type;
 			}
 		}
 	}
-	void CustomConnectedNeuralNet::setActivationType(Activation::Type type) const
+	void CustomConnectedNeuralNet::setActivationType(Activation::Type type)
 	{
+		m_defaultActivationType = type;
 		for (auto& layer : m_networkData.layers)
 		{
 			for (auto& neuron : layer.neurons)

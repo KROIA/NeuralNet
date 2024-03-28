@@ -28,10 +28,10 @@ namespace NeuralNet
 			//unsigned int neuronRadius = 5;
 
 			std::unordered_map<Neuron::ID, NeuronPainterData> cpy = m_neuronPainters;
-			for (auto& neuronPainter : cpy)
+			/*for (auto& neuronPainter : cpy)
 			{
 				delete neuronPainter.second.painter;
-			}
+			}*/
 			m_neuronPainters.clear();
 
 			NetworkData& networkData = m_neuralNet->m_networkData;
@@ -41,6 +41,7 @@ namespace NeuralNet
 				NeuronPainterData data;
 				data.id = neuronIt.first;
 				data.painter = painter;
+				data.painter->setCanvasParent(m_canvasParent);
 				m_neuronPainters[neuronIt.first] = data;			
 			}
 
@@ -78,6 +79,11 @@ namespace NeuralNet
 				xOffset += layerSpacing;
 			}
 
+		}
+
+		void CustomConnectedNeuralNetPainter::destroyNetwork()
+		{
+			m_neuronPainters.clear();
 		}
 
 		void CustomConnectedNeuralNetPainter::drawComponent(
