@@ -39,6 +39,10 @@ namespace NeuralNet
 		void setConnections(const std::vector<ConnectionInfo>& connections);
 		void removeConnection(Neuron::ID fromNeuronID, Neuron::ID toNeuronID);
 		std::vector<ConnectionInfo> getConnections() const;
+		size_t getWeightCount() const
+		{
+			return m_networkData.connections.size();
+		}
 
 		void buildNetwork();
 		void destroyNetwork();
@@ -59,11 +63,16 @@ namespace NeuralNet
 
 		Visualisation::CustomConnectedNeuralNetPainter* createVisualisation();
 
+		std::vector<float> getWeights() const;
+		float getWeight(unsigned int layerIdx, unsigned int neuronIdx, unsigned int inputIdx) const;
+		void setWeights(const std::vector<float>& weights);
+		void setWeight(unsigned int layerIdx, unsigned int neuronIdx, unsigned int inputIdx, float weight);
+
 		void learn(const std::vector<float>& expectedOutput);
 		std::vector<float> getOutputError(const std::vector<float>& expectedOutput) const;
 		float getNetError(const std::vector<float>& expectedOutput) const;
 
-	private:
+	protected:
 		void removePainter(Visualisation::CustomConnectedNeuralNetPainter* painter);
 		
 

@@ -53,9 +53,11 @@ void MainWindow::setupCanvas()
 
 
 
-    m_net = new NeuralNet::FullConnectedNeuralNet(3, 0, 1, 1);
-    m_visuNet = m_net->createVisualisation();
-    m_visuNet->setPosition(sf::Vector2f(50, 50));
+    m_net = new NeuralNet::FullConnectedNeuralNet(3, 1, 2, 1);
+    QSFML::Objects::CanvasObject* customVisuNet1 = new QSFML::Objects::CanvasObject("CustomConnectedNeuralNet");
+    customVisuNet1->setPosition(sf::Vector2f(50, 50));
+    NeuralNet::Visualisation::CustomConnectedNeuralNetPainter* visu1  = m_net->createVisualisation();
+    customVisuNet1->addComponent(visu1);
     std::vector<float> weights = m_net->getWeights();
     for (size_t i = 0; i < weights.size(); i++)
     {
@@ -65,7 +67,7 @@ void MainWindow::setupCanvas()
     m_net->setWeights(weights);
     m_net->setActivationType(NeuralNet::Activation::Type::gaussian);
     //m_net->setActivationType(1, 0, NeuralNet::Activation::Type::finiteLinear);
-    m_canvas->addObject(m_visuNet);
+    m_canvas->addObject(customVisuNet1);
 
 
     m_customNet = new NeuralNet::CustomConnectedNeuralNet(3, 1);

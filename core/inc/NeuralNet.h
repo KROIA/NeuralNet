@@ -17,7 +17,7 @@
 #include "SimpleImpl/NetworkComponents/Connection.h"
 
 
-#include "Visualisation/VisuFullConnectedNeuronalNet.h"
+#include "Visualisation/CustomConnectedNeuralNetPainter.h"
 
 
 

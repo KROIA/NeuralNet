@@ -223,6 +223,63 @@ namespace NeuralNet
 		return painter;
 	}
 
+	std::vector<float> CustomConnectedNeuralNet::getWeights() const
+	{
+		size_t weightCount = getWeightCount();
+		std::vector<float> weights(weightCount, 0);
+
+		size_t index = 0;
+		for (auto& layer : m_networkData.layers)
+		{
+			for (auto& neuron : layer.neurons)
+			{
+				for(auto& connection : neuron->getInputConnections())
+					weights[index++] = connection->getWeight();
+			}
+		}
+
+		return weights;
+	}
+	float CustomConnectedNeuralNet::getWeight(unsigned int layerIdx, unsigned int neuronIdx, unsigned int inputIdx) const
+	{
+		if(m_networkData.layers.size() <= layerIdx)
+			return 0.0f;
+		const Layer& layer = m_networkData.layers[layerIdx];
+		if(layer.neurons.size() <= neuronIdx)
+			return 0.0f;
+		const auto &conn = layer.neurons[neuronIdx]->getInputConnections();
+		if(conn.size() <= inputIdx)
+			return 0.0f;
+		return conn[inputIdx]->getWeight();
+	}
+	void CustomConnectedNeuralNet::setWeights(const std::vector<float>& weights)
+	{
+		if (weights.size() != getWeightCount())
+			return;
+		size_t index = 0;
+		for (auto& layer : m_networkData.layers)
+		{
+			for (auto& neuron : layer.neurons)
+			{
+				for(auto& connection : neuron->getInputConnections())
+					connection->setWeight(weights[index++]);
+			}
+		}
+	}
+	void CustomConnectedNeuralNet::setWeight(unsigned int layerIdx, unsigned int neuronIdx, unsigned int inputIdx, float weight)
+	{
+		if (m_networkData.layers.size() <= layerIdx)
+			return;
+		const Layer& layer = m_networkData.layers[layerIdx];
+		if (layer.neurons.size() <= neuronIdx)
+			return;
+		const auto& conn = layer.neurons[neuronIdx]->getInputConnections();
+		if (conn.size() <= inputIdx)
+			return;
+		conn[inputIdx]->setWeight(weight);
+	}
+
+
 	void CustomConnectedNeuralNet::learn(const std::vector<float>& expectedOutput)
 	{
 		if (expectedOutput.size() != getOutputCount())

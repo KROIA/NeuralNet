@@ -27,7 +27,7 @@ private:
 
     QSFML::Canvas* m_canvas;
 
-    NeuralNet::Visualisation::VisuFullConnectedNeuronalNet* m_visuNet;
+    //NeuralNet::Visualisation::VisuFullConnectedNeuronalNet* m_visuNet;
     NeuralNet::FullConnectedNeuralNet* m_net;
     NeuralNet::CustomConnectedNeuralNet * m_customNet;
 
