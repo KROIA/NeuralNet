@@ -21,6 +21,17 @@ namespace NeuralNet
 
 			void buildNetwork();
 			void destroyNetwork();
+
+			Neuron::ID getNeuronAtPosition(const sf::Vector2f& position, bool &success) const;
+			void setNeuronPosition(Neuron::ID id, const sf::Vector2f& position)
+			{
+				auto it = m_neuronPainters.find(id);
+				if (it != m_neuronPainters.end())
+				{
+					it->second.position = position;
+					it->second.painter->setPosition(position);
+				}
+			}
 		private:
 			void setCanvasParent(QSFML::Canvas* parent) override
 			{

@@ -54,10 +54,10 @@ void MainWindow::setupCanvas()
 
 
     m_net = new NeuralNet::FullConnectedNeuralNet(3, 1, 2, 1);
-    QSFML::Objects::CanvasObject* customVisuNet1 = new QSFML::Objects::CanvasObject("CustomConnectedNeuralNet");
-    customVisuNet1->setPosition(sf::Vector2f(50, 50));
-    NeuralNet::Visualisation::CustomConnectedNeuralNetPainter* visu1  = m_net->createVisualisation();
-    customVisuNet1->addComponent(visu1);
+    //QSFML::Objects::CanvasObject* customVisuNet1 = new QSFML::Objects::CanvasObject("CustomConnectedNeuralNet");
+    //customVisuNet1->setPosition(sf::Vector2f(50, 50));
+    //NeuralNet::Visualisation::CustomConnectedNeuralNetPainter* visu1  = m_net->createVisualisation();
+    //customVisuNet1->addComponent(visu1);
     std::vector<float> weights = m_net->getWeights();
     for (size_t i = 0; i < weights.size(); i++)
     {
@@ -66,8 +66,11 @@ void MainWindow::setupCanvas()
 	}
     m_net->setWeights(weights);
     m_net->setActivationType(NeuralNet::Activation::Type::gaussian);
-    //m_net->setActivationType(1, 0, NeuralNet::Activation::Type::finiteLinear);
-    m_canvas->addObject(customVisuNet1);
+    //m_canvas->addObject(customVisuNet1);
+
+    m_netObject1 = new NeuralNet::NeuralNetCanvasObject(m_net, "NeuralNetCanvasObject1");
+    m_netObject1->setPosition(sf::Vector2f(50, 50));
+    m_canvas->addObject(m_netObject1);
 
 
     m_customNet = new NeuralNet::CustomConnectedNeuralNet(3, 1);
@@ -108,11 +111,16 @@ void MainWindow::setupCanvas()
     m_customNet->setInputValues({ -1, 0.5, 1 });
     m_customNet->update();
 
-    QSFML::Objects::CanvasObject* customVisuNet = new QSFML::Objects::CanvasObject("CustomConnectedNeuralNet");
-    customVisuNet->setPosition(sf::Vector2f(50, 300));
-    NeuralNet::Visualisation::CustomConnectedNeuralNetPainter* customPainter = m_customNet->createVisualisation();
-    customVisuNet->addComponent((QSFML::Components::Component*)customPainter);
-    m_canvas->addObject(customVisuNet);
+   //QSFML::Objects::CanvasObject* customVisuNet = new QSFML::Objects::CanvasObject("CustomConnectedNeuralNet");
+   //customVisuNet->setPosition(sf::Vector2f(50, 300));
+   //NeuralNet::Visualisation::CustomConnectedNeuralNetPainter* customPainter = m_customNet->createVisualisation();
+   //customVisuNet->addComponent((QSFML::Components::Component*)customPainter);
+   //m_canvas->addObject(customVisuNet);
+
+
+    m_netObject2 = new NeuralNet::NeuralNetCanvasObject(m_customNet, "NeuralNetCanvasObject2");
+    m_netObject2->setPosition(sf::Vector2f(50, 300));
+    m_canvas->addObject(m_netObject2);
 
 }
 void MainWindow::closeEvent(QCloseEvent* event)

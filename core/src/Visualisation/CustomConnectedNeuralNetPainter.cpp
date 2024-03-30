@@ -86,6 +86,20 @@ namespace NeuralNet
 			m_neuronPainters.clear();
 		}
 
+		Neuron::ID CustomConnectedNeuralNetPainter::getNeuronAtPosition(const sf::Vector2f& position, bool& success) const
+		{
+			for (auto& neuronPainter : m_neuronPainters)
+			{
+				if (neuronPainter.second.painter->contains(position))
+				{
+					success = true;
+					return neuronPainter.first;
+				}
+			}
+			success = false;
+			return 0;
+		}
+
 		void CustomConnectedNeuralNetPainter::drawComponent(
 			sf::RenderTarget& target,
 			sf::RenderStates states) const

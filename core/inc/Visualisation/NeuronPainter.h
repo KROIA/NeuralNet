@@ -36,6 +36,13 @@ namespace NeuralNet
 				if(parent)
 					m_idText.setFont(parent->getTextFont());
 			}
+
+			bool contains(const sf::Vector2f& point) const
+			{
+				const sf::Vector2f &pos = getPosition();
+				float distance2 = (pos.x - point.x) * (pos.x - point.x) + (pos.y - point.y) * (pos.y - point.y);
+				return  distance2  <= m_radius * m_radius;
+			}
 		protected:
 
 			

@@ -31,7 +31,8 @@ private:
     NeuralNet::FullConnectedNeuralNet* m_net;
     NeuralNet::CustomConnectedNeuralNet * m_customNet;
 
-
+    NeuralNet::NeuralNetCanvasObject *m_netObject1;
+    NeuralNet::NeuralNetCanvasObject *m_netObject2;
 
     QTimer m_timer;
 

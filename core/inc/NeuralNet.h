@@ -18,6 +18,7 @@
 
 
 #include "Visualisation/CustomConnectedNeuralNetPainter.h"
+#include "Visualisation/NeuralNetCanvasObject.h"
 
 
 
