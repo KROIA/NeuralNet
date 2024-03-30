@@ -23,6 +23,15 @@ namespace NeuralNet
 
 		void update() override;
 
+		void setDragingGridSize(int gridSize)
+		{
+			m_dragData.gridSize = gridSize;
+		}
+		int getDragingGridSize() const
+		{
+			return m_dragData.gridSize;
+		}
+
 	private slots:
 		void onMouseFallingEdge();
 		void onMouseRisingEdge();
@@ -39,6 +48,12 @@ namespace NeuralNet
 		Visualisation::CustomConnectedNeuralNetPainter *m_neuralNetPainter;
 		CustomConnectedNeuralNet *m_neuralNet;
 
-		Neuron *m_currentSelectedNeuron = nullptr;
+		struct DragData
+		{
+			int gridSize = 10;
+			Neuron* dragingNeuron = nullptr;
+		};
+		DragData m_dragData;
+
 	};
 }

@@ -45,9 +45,17 @@ namespace NeuralNet
 
 	void NeuralNetCanvasObject::update()
 	{
-		if (m_currentSelectedNeuron && m_neuralNetPainter)
+		if (m_dragData.dragingNeuron && m_neuralNetPainter)
 		{
-			m_neuralNetPainter->setNeuronPosition(m_currentSelectedNeuron->getID(), getMouseWorldPosition() - m_neuralNetPainter->getGlobalPosition());
+			sf::Vector2f newPos = getMouseWorldPosition() - m_neuralNetPainter->getGlobalPosition();
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
+			{
+				// snap to grid
+				int gridsize = m_dragData.gridSize;
+				newPos.x = std::round(newPos.x / gridsize) * gridsize;
+				newPos.y = std::round(newPos.y / gridsize) * gridsize;
+			}
+			m_neuralNetPainter->setNeuronPosition(m_dragData.dragingNeuron->getID(), newPos);
 		}
 	}
 
@@ -63,10 +71,10 @@ namespace NeuralNet
 			return;
 
 		std::cout << "Selected neuron: " << selectedNeuron << std::endl;
-		m_currentSelectedNeuron = m_neuralNet->getNeuron(selectedNeuron);
+		m_dragData.dragingNeuron = m_neuralNet->getNeuron(selectedNeuron);
 	}
 	void NeuralNetCanvasObject::onMouseRisingEdge()
 	{
-		m_currentSelectedNeuron = nullptr;
+		m_dragData.dragingNeuron = nullptr;
 	}
 }

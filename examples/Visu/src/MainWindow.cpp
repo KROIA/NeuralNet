@@ -58,13 +58,13 @@ void MainWindow::setupCanvas()
     //customVisuNet1->setPosition(sf::Vector2f(50, 50));
     //NeuralNet::Visualisation::CustomConnectedNeuralNetPainter* visu1  = m_net->createVisualisation();
     //customVisuNet1->addComponent(visu1);
-    std::vector<float> weights = m_net->getWeights();
+   /* std::vector<float> weights = m_net->getWeights();
     for (size_t i = 0; i < weights.size(); i++)
     {
         weights[i] = QSFML::Utilities::RandomEngine::getFloat(-1, 1);
             //(2.f *i / weights.size())-1.f;
 	}
-    m_net->setWeights(weights);
+    m_net->setWeights(weights);*/
     m_net->setActivationType(NeuralNet::Activation::Type::gaussian);
     //m_canvas->addObject(customVisuNet1);
 
