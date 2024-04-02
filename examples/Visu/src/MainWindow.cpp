@@ -84,13 +84,14 @@ void MainWindow::setupCanvas()
 
         m_customNet->addConnection(i, 20, QSFML::Utilities::RandomEngine::getFloat(-1,1));
     }*/
+
     // m_customNet->addConnection(0, 3, 1);
     // m_customNet->addConnection(1, 3, 1);
-    // m_customNet->addConnection(2, 3, -1);
-    m_customNet->addConnection(0, 3);
+    // m_cuomNet->addConnection(2, 3, -1);
+    m_customNet->addConnection(0, 3, 0.5);
     //m_customNet->addConnection(0, 4);
-    m_customNet->addConnection(1, 3);
-    m_customNet->addConnection(2, 3);
+    m_customNet->addConnection(1, 3, 2);
+    m_customNet->addConnection(2, 3, 0.1);
 
     //m_customNet->addConnection(2, 4);
     //m_customNet->addConnection(1, 4);
@@ -191,7 +192,7 @@ void MainWindow::onTimerFinish()
     float netError2 = m_customNet->getNetError(trainSample.expectedOutput);
     m_customNet->learn(trainSample.expectedOutput);
 
-    std::cout << netError1 << "\t" << netError2 << "\n";
+   // std::cout << netError1 << "\t" << netError2 << "\n";
 
     currentExampleIndex++;
     
@@ -201,12 +202,12 @@ void MainWindow::onTimerFinish()
     if (counter == 1000)
     {
         const auto netWeights = m_net->getWeights();
-        std::cout << "weights: ";
+       /* std::cout << "weights: ";
         for (size_t i = 0; i < netWeights.size(); i++)
         {
 			std::cout << netWeights[i] << "\t";
 		}
-        std::cout << "\n";
+        std::cout << "\n";*/
         m_timer.setInterval(1000);
     }
 }

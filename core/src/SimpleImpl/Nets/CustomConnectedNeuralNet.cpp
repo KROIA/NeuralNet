@@ -122,7 +122,6 @@ namespace NeuralNet
 		if(index < m_outputValues.size())
 			return m_outputValues[index];
 		return 0.0f;
-	
 	}
 
 	Neuron* CustomConnectedNeuralNet::getNeuron(Neuron::ID id)

@@ -6,6 +6,8 @@
 #include "CustomConnectedNeuralNetPainter.h"
 #include "SimpleImpl/Nets/CustomConnectedNeuralNet.h"
 
+#include <qspinbox.h>
+
 namespace NeuralNet
 {
 	class NEURAL_NET_EXPORT NeuralNetCanvasObject: public QObject, public QSFML::Objects::CanvasObject
@@ -54,6 +56,8 @@ namespace NeuralNet
 			Neuron* dragingNeuron = nullptr;
 		};
 		DragData m_dragData;
+
+		QSpinBox* m_spinBox = nullptr;
 
 	};
 }

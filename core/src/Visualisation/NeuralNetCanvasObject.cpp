@@ -1,4 +1,6 @@
 #include "Visualisation/NeuralNetCanvasObject.h"
+#include <QLayout>
+#include <QWindow >
 
 namespace NeuralNet
 {
@@ -48,6 +50,19 @@ namespace NeuralNet
 		if (m_dragData.dragingNeuron && m_neuralNetPainter)
 		{
 			sf::Vector2f newPos = getMouseWorldPosition() - m_neuralNetPainter->getGlobalPosition();
+			sf::Vector2i pixelPos = getMousePosition();
+			sf::Vector2i widgetSize(getCanvasParent()->geometry().width(), 
+				getCanvasParent()->geometry().height());
+			if (m_spinBox)
+			{
+				std::cout << "ratio: "<< getCanvasParent()->devicePixelRatio();
+				auto geometry = m_spinBox->geometry();
+				geometry.moveTo(pixelPos.x, pixelPos.y);
+				m_spinBox->setGeometry(geometry);
+				std::cout << "Spinbox pos: " << pixelPos.x << " " << pixelPos.y;
+				std::cout << "WidgetSize: " << widgetSize.x << " " << widgetSize.y << std::endl;
+			}
+			
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
 			{
 				// snap to grid
@@ -72,9 +87,14 @@ namespace NeuralNet
 
 		std::cout << "Selected neuron: " << selectedNeuron << std::endl;
 		m_dragData.dragingNeuron = m_neuralNet->getNeuron(selectedNeuron);
+		m_spinBox = new QSpinBox(getCanvasParent());
+		m_spinBox->show();
+		
+		//getCanvasParent()->layout()->addWidget(m_spinBox);
 	}
 	void NeuralNetCanvasObject::onMouseRisingEdge()
 	{
 		m_dragData.dragingNeuron = nullptr;
+		delete m_spinBox;
 	}
 }
