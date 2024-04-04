@@ -6,7 +6,7 @@
 #include "CustomConnectedNeuralNetPainter.h"
 #include "SimpleImpl/Nets/CustomConnectedNeuralNet.h"
 
-#include <qspinbox.h>
+//#include <qspinbox.h>
 
 namespace NeuralNet
 {
@@ -57,7 +57,7 @@ namespace NeuralNet
 		};
 		DragData m_dragData;
 
-		QSpinBox* m_spinBox = nullptr;
+		//QSpinBox* m_spinBox = nullptr;
 
 	};
 }
