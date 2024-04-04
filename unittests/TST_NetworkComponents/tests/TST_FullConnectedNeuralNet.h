@@ -41,9 +41,9 @@ private:
 	}
 
 	// Tests
-	bool smalNet(TestResults& results)
+	TEST_FUNCTION(smalNet)
 	{
-		TEST_START(results);
+		TEST_START;
 
 		unsigned int inputSize = 2;
 		unsigned int outputSize = 1;
@@ -67,8 +67,5 @@ private:
 		net.setInputValues({0.f, 1.f});
 		net.update();
 		TEST_ASSERT(compare(net.getOutputValues(), std::vector<float>(outputSize, 1.f)));
-		
-
-		TEST_END;
 	}
 };

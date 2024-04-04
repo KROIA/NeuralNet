@@ -92,9 +92,9 @@ private:
 
 
 	// Tests
-	bool checkFunctions(TestResults& results)
+	TEST_FUNCTION(checkFunctions)
 	{
-		TEST_START(results);
+		TEST_START;
 
 		for(auto & testSet : m_testSets)
 		{
@@ -106,16 +106,14 @@ private:
 			NeuralNet::Activation::ActivationFunction functionDeriv = NeuralNet::Activation::getActivationDerivetiveFunction(testSet.type);
 			TEST_ASSERT_M(functionDeriv != nullptr, "Activationfunction derivative for type: " + std::to_string(testSet.type) + " is not defined");
 		}
-
-		TEST_END;
 	}
 
 
 
 
-	bool checkTestSets(TestResults& results)
+	TEST_FUNCTION(checkTestSets)
 	{
-		TEST_START(results);
+		TEST_START;
 
 		for(auto & testSet : m_testSets)
 		{
@@ -126,17 +124,14 @@ private:
 		{
 			checkSetDerivative(results, testSet);
 		}
-
-
-		TEST_END;
 	}
 
-	bool checkSet(TestResults & results, const TestSet& testSet)
+	void checkSet(TestResults &results, const TestSet& testSet)
 	{
-		TEST_START(results);
+		TEST_START;
 		NeuralNet::Activation::ActivationFunction function = NeuralNet::Activation::getActivationFunction(testSet.type);
 
-		TEST_MESSAGE("Testing activation function: " + NeuralNet::Activation::getActivationName(testSet.type));
+		TEST_MESSAGE(std::string("Testing activation function: ") + NeuralNet::Activation::getActivationName(testSet.type));
 		for (const auto& testCase : testSet.testCases)
 		{
 			float output = function(testCase.input);
@@ -144,15 +139,13 @@ private:
 			TEST_ASSERT_M(abs(difference) < m_tollerance, 
 				"Difference between expected and actual output is too large: " + std::to_string(difference));
 		}
-
-		TEST_END;
 	}
-	bool checkSetDerivative(TestResults& results, const TestSet& testSet)
+	void checkSetDerivative(TestResults& results, const TestSet& testSet)
 	{
 		TEST_START(results);
 		NeuralNet::Activation::ActivationFunction function = NeuralNet::Activation::getActivationDerivetiveFunction(testSet.type);
 
-		TEST_MESSAGE("Testing activation derivative function: " + NeuralNet::Activation::getActivationName(testSet.type));
+		TEST_MESSAGE(std::string("Testing activation derivative function: ") + NeuralNet::Activation::getActivationName(testSet.type));
 		for (const auto& testCase : testSet.testCases)
 		{
 			float output = function(testCase.input);
@@ -160,8 +153,6 @@ private:
 			TEST_ASSERT_M(abs(difference) < m_tollerance,
 				"Difference between expected and actual output is too large: " + std::to_string(difference));
 		}
-
-		TEST_END;
 	}
 
 };

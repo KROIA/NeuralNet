@@ -27,9 +27,9 @@ private:
 	}
 
 	// Tests
-	bool connection(TestResults& results)
+	TEST_FUNCTION(connection)
 	{
-		TEST_START(results);
+		TEST_START;
 
 		NeuralNet::InputNeuron neuron1(1);
 		NeuralNet::Neuron neuron2(2);
@@ -51,7 +51,5 @@ private:
 		neuron2.update();
 		TEST_ASSERT(compare(connection.getOutputValue(), 1));
 		TEST_ASSERT(compare(neuron2.getOutput(), 1));
-
-		TEST_END;
 	}
 };

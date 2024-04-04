@@ -28,9 +28,9 @@ private:
 	}
 
 	// Tests
-	bool calcNetinput(TestResults& results)
+	TEST_FUNCTION(calcNetinput)
 	{
-		TEST_START(results);
+		TEST_START;
 
 		/*NeuralNet::Neuron neuron;
 		neuron.addInputConnection(&connection);
@@ -47,15 +47,14 @@ private:
 		neuron.update();
 		TEST_ASSERT(compare(neuron.getNetInput(), 3));*/
 
-		TEST_END;
 	}
 
 
 
 
-	bool calcOutput(TestResults& results)
+	TEST_FUNCTION(calcOutput)
 	{
-		TEST_START(results);
+		TEST_START;
 
 		/*NeuralNet::Neuron neuron;
 		neuron.setActivationType(NeuralNet::Activation::Type::linear);
@@ -86,9 +85,6 @@ private:
 		neuron.setInputValues({ 1.0f , 5.f, 3.f});
 		neuron.update();
 		TEST_ASSERT(compare(neuron.getOutput(), 9.f));*/
-
-
-		TEST_END;
 	}
 
 };
