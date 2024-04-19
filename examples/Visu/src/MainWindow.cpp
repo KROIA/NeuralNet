@@ -65,7 +65,8 @@ void MainWindow::setupCanvas()
             //(2.f *i / weights.size())-1.f;
 	}
     m_net->setWeights(weights);*/
-    m_net->setActivationType(NeuralNet::Activation::Type::gaussian);
+    m_net->setActivationType(NeuralNet::Activation::Type::sigmoid);
+    m_net->setActivationType(5, NeuralNet::Activation::Type::gaussian);
     //m_canvas->addObject(customVisuNet1);
 
     m_netObject1 = new NeuralNet::NeuralNetCanvasObject(m_net, "NeuralNetCanvasObject1");
