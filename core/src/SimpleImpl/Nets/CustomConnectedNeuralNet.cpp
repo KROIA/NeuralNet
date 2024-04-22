@@ -78,6 +78,7 @@ namespace NeuralNet
 		
 		CustomConnectedNeuralNetBuilder::buildNetwork(
 			m_buildingConnections, 
+			m_biasList,
 			m_activationFunctions, 
 			m_defaultLayerActivationTypes,
 			m_defaultActivationType,
@@ -132,6 +133,33 @@ namespace NeuralNet
 			return it->second;
 		}
 		return nullptr;
+	}
+	const Neuron* CustomConnectedNeuralNet::getNeuron(Neuron::ID id) const
+	{
+		auto it = m_networkData.neurons.find(id);
+		if (it != m_networkData.neurons.end())
+		{
+			return it->second;
+		}
+		return nullptr;
+	}
+	Neuron* CustomConnectedNeuralNet::getNeuron(unsigned int layerIdx, unsigned int neuronIdx)
+	{
+		if (m_networkData.layers.size() <= layerIdx)
+			return nullptr;
+		const Layer& layer = m_networkData.layers[layerIdx];
+		if (layer.neurons.size() <= neuronIdx)
+			return nullptr;
+		return layer.neurons[neuronIdx];
+	}
+	const Neuron* CustomConnectedNeuralNet::getNeuron(unsigned int layerIdx, unsigned int neuronIdx) const
+	{
+		if (m_networkData.layers.size() <= layerIdx)
+			return nullptr;
+		const Layer& layer = m_networkData.layers[layerIdx];
+		if (layer.neurons.size() <= neuronIdx)
+			return nullptr;
+		return layer.neurons[neuronIdx];
 	}
 
 	Activation::Type CustomConnectedNeuralNet::getActivationType(Neuron::ID id) const
@@ -241,12 +269,10 @@ namespace NeuralNet
 	}
 	float CustomConnectedNeuralNet::getWeight(unsigned int layerIdx, unsigned int neuronIdx, unsigned int inputIdx) const
 	{
-		if(m_networkData.layers.size() <= layerIdx)
+		const Neuron* n = getNeuron(layerIdx, neuronIdx);
+		if (!n)
 			return 0.0f;
-		const Layer& layer = m_networkData.layers[layerIdx];
-		if(layer.neurons.size() <= neuronIdx)
-			return 0.0f;
-		const auto &conn = layer.neurons[neuronIdx]->getInputConnections();
+		const auto &conn = n->getInputConnections();
 		if(conn.size() <= inputIdx)
 			return 0.0f;
 		return conn[inputIdx]->getWeight();
@@ -267,15 +293,78 @@ namespace NeuralNet
 	}
 	void CustomConnectedNeuralNet::setWeight(unsigned int layerIdx, unsigned int neuronIdx, unsigned int inputIdx, float weight)
 	{
-		if (m_networkData.layers.size() <= layerIdx)
+		Neuron* n = getNeuron(layerIdx, neuronIdx);
+		if (!n)
 			return;
-		const Layer& layer = m_networkData.layers[layerIdx];
-		if (layer.neurons.size() <= neuronIdx)
-			return;
-		const auto& conn = layer.neurons[neuronIdx]->getInputConnections();
+		const auto& conn = n->getInputConnections();
 		if (conn.size() <= inputIdx)
 			return;
 		conn[inputIdx]->setWeight(weight);
+	}
+
+	float CustomConnectedNeuralNet::getBias(unsigned int layerIdx, unsigned int neuronIdx) const
+	{
+		const Neuron* n = getNeuron(layerIdx, neuronIdx);
+		if (!n)
+			return 0.0f;
+		return n->getBias();
+	}
+	float CustomConnectedNeuralNet::getBias(Neuron::ID id) const
+	{
+		const Neuron* n = getNeuron(id);
+		if (!n)
+			return 0.0f;
+		return n->getBias();
+	}
+	std::vector<float> CustomConnectedNeuralNet::getBias() const
+	{
+		size_t neuronCount;
+		std::vector<float> biasList(m_networkData.neuronCount, 0);
+
+		size_t index = 0;
+		for(size_t i=1; i< m_networkData.layers.size(); ++i)
+		{
+			for (auto& neuron : m_networkData.layers[i].neurons)
+			{
+				biasList[index] = neuron->getBias();
+				++index;
+			}
+		}
+
+		return biasList;
+	}
+
+	void CustomConnectedNeuralNet::setBias(Neuron::ID id, float bias)
+	{
+		m_biasList[id] = bias;
+		Neuron* n = getNeuron(id);
+		if (!n)
+			return;
+		n->setBias(bias);
+	}
+	void CustomConnectedNeuralNet::setBias(unsigned int layerIdx, unsigned int neuronIdx, float bias)
+	{
+		Neuron* n = getNeuron(layerIdx, neuronIdx);
+		if (!n)
+			return;
+		n->setBias(bias);
+		m_biasList[n->getID()] = bias;
+	}
+	void CustomConnectedNeuralNet::setBias(const std::vector<float>& biasList)
+	{
+		if (biasList.size() != m_networkData.neuronCount)
+			return; // invalid size
+
+		size_t index = 0;
+		for (size_t i = 1; i < m_networkData.layers.size(); ++i)
+		{
+			for (auto& neuron : m_networkData.layers[i].neurons)
+			{
+				neuron->setBias(biasList[index]);
+				m_biasList[neuron->getID()] = biasList[index];
+				++index;
+			}
+		}
 	}
 
 

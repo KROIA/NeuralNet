@@ -6,6 +6,7 @@ namespace NeuralNet
 {
 	void CustomConnectedNeuralNet::CustomConnectedNeuralNetBuilder::buildNetwork(
 		const std::vector<ConnectionInfo>& connections,
+		const std::unordered_map<Neuron::ID, float>& biasList,
 		const std::unordered_map<Neuron::ID, Activation::Type>& activationFunctions, 
 		const std::unordered_map<unsigned int, Activation::Type>& defaultLayerActivationTypes,
 		Activation::Type defaultActivationType,
@@ -158,7 +159,27 @@ namespace NeuralNet
 				if(it2 == activationFunctions.end())
 					neuron->setActivationType(type);
 			}
+			if(i>0) // skip input layer
+				network.neuronCount += layer.neurons.size();
 		}
+
+		// set Bias
+		for (auto& pair : network.neurons)
+		{
+			auto& it = biasList.find(pair.first);
+			if (it != biasList.end())
+			{
+				pair.second->setBias(it->second);
+			}
+		}
+
+		// Sort neurons
+		/*network.sortedNeurons.reserve(network.neurons.size());
+		for (const auto& neuron : network.neurons)
+			network.sortedNeurons.push_back(neuron.second);
+		std::sort(network.sortedNeurons.begin(), network.sortedNeurons.end(), [](Neuron* a, Neuron* b) {
+			return a->getID() < b->getID();
+		});*/
 	}
 
 	void CustomConnectedNeuralNet::CustomConnectedNeuralNetBuilder::destroyNetwork(
@@ -173,6 +194,10 @@ namespace NeuralNet
 		for(auto& conn : network.connections)
 			delete conn;
 		network.connections.clear();
+
+		network.neuronCount = 0;
+
+		//network.sortedNeurons.clear();
 	}
 
 
@@ -202,6 +227,16 @@ namespace NeuralNet
 		}
 	}
 
+	void CustomConnectedNeuralNet::CustomConnectedNeuralNetBuilder::getBiasList(const NetworkData& network,
+		std::unordered_map<Neuron::ID, float>& biasList)
+	{
+		biasList.clear();
+		biasList.reserve(network.neuronCount);
+		for (auto& pair : network.neurons)
+		{
+			biasList[pair.first] = pair.second->getBias();
+		}
+	}
 
 	void CustomConnectedNeuralNet::CustomConnectedNeuralNetBuilder::splitIntoLayers(NetworkData& network)
 	{

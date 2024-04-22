@@ -22,7 +22,7 @@ namespace NeuralNet
 		protected:
 
 		private:
-			float m_learningRage = 1.f;
+			float m_learningRate = 1.f;
 		};
 	}
 }

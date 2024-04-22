@@ -32,6 +32,7 @@ namespace NeuralNet
 		{
 			m_buildingConnections.clear();
 			m_activationFunctions.clear();
+			clearBiasList();
 		}
 		void addConnection(const ConnectionInfo& connectionInfo);
 		void addConnection(Neuron::ID fromNeuronID, Neuron::ID toNeuronID);
@@ -42,6 +43,10 @@ namespace NeuralNet
 		size_t getWeightCount() const
 		{
 			return m_networkData.connections.size();
+		}
+		void clearBiasList()
+		{
+			m_biasList.clear();
 		}
 
 		void buildNetwork();
@@ -58,6 +63,9 @@ namespace NeuralNet
 		void setActivationType(Activation::Type type);
 
 		Neuron* getNeuron(Neuron::ID id);
+		const Neuron* getNeuron(Neuron::ID id) const;
+		Neuron* getNeuron(unsigned int layerIdx, unsigned int neuronIdx);
+		const Neuron* getNeuron(unsigned int layerIdx, unsigned int neuronIdx) const;
 
 		void update() override;
 
@@ -67,6 +75,13 @@ namespace NeuralNet
 		float getWeight(unsigned int layerIdx, unsigned int neuronIdx, unsigned int inputIdx) const;
 		void setWeights(const std::vector<float>& weights);
 		void setWeight(unsigned int layerIdx, unsigned int neuronIdx, unsigned int inputIdx, float weight);
+
+		float getBias(unsigned int layerIdx, unsigned int neuronIdx) const;
+		float getBias(Neuron::ID id) const;
+		std::vector<float> getBias() const;
+		void setBias(Neuron::ID id, float bias);
+		void setBias(unsigned int layerIdx, unsigned int neuronIdx, float bias);
+		void setBias(const std::vector<float>& biasList);
 
 		void learn(const std::vector<float>& expectedOutput);
 		std::vector<float> getOutputError(const std::vector<float>& expectedOutput) const;
@@ -79,6 +94,7 @@ namespace NeuralNet
 		NetworkData m_networkData;
 		std::vector<ConnectionInfo> m_buildingConnections;
 
+		std::unordered_map<Neuron::ID, float> m_biasList;
 		std::unordered_map<Neuron::ID, Activation::Type> m_activationFunctions;
 		std::unordered_map<unsigned int, Activation::Type> m_defaultLayerActivationTypes;
 		Activation::Type m_defaultActivationType;
@@ -96,6 +112,7 @@ namespace NeuralNet
 		public:
 			static void buildNetwork(
 				const std::vector<ConnectionInfo>& connections, 
+				const std::unordered_map<Neuron::ID, float>& biasList,
 				const std::unordered_map<Neuron::ID, Activation::Type>& activationFunctions,
 				const std::unordered_map<unsigned int, Activation::Type> &defaultLayerActivationTypes,
 				Activation::Type defaultActivationType,
@@ -107,6 +124,9 @@ namespace NeuralNet
 
 			static void getConnections(const NetworkData& network,
 				std::vector<ConnectionInfo>& connectionInfos);
+
+			static void getBiasList(const NetworkData& network,
+				std::unordered_map<Neuron::ID, float>& biasList);
 
 		private:
 			static void splitIntoLayers(NetworkData& network);

@@ -9,12 +9,14 @@ namespace NeuralNet
 		: m_id(id)
 	{
 		m_activationFunction = Activation::getActivationFunction(m_activationType);
+		m_bias = 0;
 	}
 	Neuron::Neuron(ID id, Activation::Type& activationType)
 		: m_id(id)
 	{
 		m_activationType = activationType;
 		m_activationFunction = Activation::getActivationFunction(m_activationType);
+		m_bias = 0;
 	}
 	Neuron::Neuron(const Neuron& neuron)
 		: m_id(neuron.m_id)
@@ -23,6 +25,7 @@ namespace NeuralNet
 		m_output = neuron.m_output;
 		m_activationType = neuron.m_activationType;
 		m_activationFunction = Activation::getActivationFunction(m_activationType);
+		m_bias = neuron.m_bias;
 	}
 	Neuron::Neuron(Neuron&& neuron) noexcept
 		: m_id(neuron.m_id)
@@ -31,6 +34,7 @@ namespace NeuralNet
 		m_output = neuron.m_output;
 		m_activationType = neuron.m_activationType;
 		m_activationFunction = Activation::getActivationFunction(m_activationType);
+		m_bias = neuron.m_bias;
 	}
 	
 	Neuron& Neuron::operator=(const Neuron& neuron)
@@ -40,6 +44,7 @@ namespace NeuralNet
 		m_output = neuron.m_output;
 		m_activationType = neuron.m_activationType;
 		m_activationFunction = Activation::getActivationFunction(m_activationType);
+		m_bias = neuron.m_bias;
 		return *this;
 	}
 	Neuron& Neuron::operator=(Neuron&& neuron) noexcept
@@ -49,6 +54,7 @@ namespace NeuralNet
 		m_output = neuron.m_output;
 		m_activationType = neuron.m_activationType;
 		m_activationFunction = Activation::getActivationFunction(m_activationType);
+		m_bias = neuron.m_bias;
 		return *this;
 	}
 	Neuron::~Neuron()
@@ -65,11 +71,7 @@ namespace NeuralNet
 
 	void Neuron::update()
 	{
-		float netinput = 0;
-		/*for (auto& signal : m_inputValues)
-		{
-			netinput += signal;
-		}*/
+		float netinput = m_bias;
 		for (auto& conn : m_inputConnections)
 		{
 			netinput += conn->getOutputValue();

@@ -71,9 +71,11 @@ namespace NeuralNet
 						if(layerIdx > 1)
 							neuronError[startNeuron] += error * connections[y]->getWeight();
 						
-						float deltaW = startNeuron->getOutput() * error * m_learningRage;
+						float deltaW = startNeuron->getOutput() * error * m_learningRate;
 						connections[y]->updateWeight(deltaW);
 					}
+					float deltaBias = error * m_learningRate;
+					neuron->setBias(neuron->getBias() + deltaBias);
 				}
 				//layerError = nextLayerError;
 				//nextLayerErrorSize = layers[layerIdx - 1].neurons.size();

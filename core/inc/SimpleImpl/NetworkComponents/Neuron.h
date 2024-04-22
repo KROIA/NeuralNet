@@ -97,6 +97,14 @@ namespace NeuralNet
 		{
 			return m_netinput;
 		}
+		void setBias(float b)
+		{
+			m_bias = b;
+		}
+		float getBias() const
+		{
+			return m_bias;
+		}
 
 		ID getID() const
 		{
@@ -132,6 +140,7 @@ namespace NeuralNet
 		std::vector<Connection*> m_inputConnections;
 		float m_netinput = 0.f;
 		float m_output = 0.f;
+		float m_bias;
 		Activation::Type m_activationType = Activation::Type::linear;
 		Activation::ActivationFunction m_activationFunction;
 		ID m_id;

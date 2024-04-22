@@ -18,6 +18,11 @@ namespace NeuralNet
 		std::unordered_map<Neuron::ID, Neuron*> neurons;
 
 		/// <summary>
+		/// Sorted by the Neuron::ID
+		/// </summary>
+		//std::vector<Neuron*> sortedNeurons; 
+
+		/// <summary>
 		/// Container for all connections
 		/// </summary>
 		std::vector<Connection*> connections;
@@ -26,6 +31,8 @@ namespace NeuralNet
 		/// Same objects, but splitted into layers
 		/// </summary>
 		std::vector<Layer> layers;
+
+		unsigned int neuronCount;
 	};
 
 	struct ConnectionInfo
