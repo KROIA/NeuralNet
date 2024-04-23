@@ -22,6 +22,19 @@ namespace NeuralNet
 		NeuralNetCanvasObject(const NeuralNetCanvasObject& other);
 		~NeuralNetCanvasObject();
 
+		void setLayerSpacing(float spacing) { m_neuralNetPainter->setLayerSpacing(spacing); }
+		void setNeuronSpacing(float spacing) { m_neuralNetPainter->setNeuronSpacing(spacing); }
+		void buildNetwork() { m_neuralNetPainter->buildNetwork(); }
+		void resetPositions() { m_neuralNetPainter->resetPositions(); }
+		void setNeuronRadius(float radius) { m_neuralNetPainter->setNeuronRadius(radius); }
+
+		void setNeuronPosition(Neuron::ID id, const sf::Vector2f& pos) { m_neuralNetPainter->setNeuronPosition(id, pos); }
+		void moveLayer(unsigned int layer, const sf::Vector2f& offset) { m_neuralNetPainter->moveLayer(layer, offset); }
+		void moveNeuron(Neuron::ID id, const sf::Vector2f& offset) { m_neuralNetPainter->moveNeuron(id, offset); }
+		void resetLayerPosition(unsigned int layer, const sf::Vector2f& position, const sf::Vector2f& spacing)
+		{ m_neuralNetPainter->resetLayerPosition(layer, position, spacing); }
+		
+
 
 		void update() override;
 

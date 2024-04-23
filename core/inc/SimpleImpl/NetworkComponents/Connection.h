@@ -31,6 +31,10 @@ namespace NeuralNet
 		void setWeight(float weight)
 		{
 			m_weight = weight;
+			if (isnan(m_weight) || isinf(m_weight))
+			{
+				m_weight = 0.0f;
+			}
 		}
 
 
@@ -51,6 +55,10 @@ namespace NeuralNet
 		void updateWeight(float deltaWeight)
 		{
 			m_weight += deltaWeight;
+			if (isnan(m_weight) || isinf(m_weight))
+			{
+				m_weight = 0.0f;
+			}
 		}
 		/*void passValue(float Value) const
 		{

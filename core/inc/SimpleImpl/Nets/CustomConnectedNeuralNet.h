@@ -83,6 +83,9 @@ namespace NeuralNet
 		void setBias(unsigned int layerIdx, unsigned int neuronIdx, float bias);
 		void setBias(const std::vector<float>& biasList);
 
+		void enableNormalizedNetInput(bool enable);
+
+		void setLearningRate(float learnRate){ m_backProp.setLearningRate(learnRate); }
 		void learn(const std::vector<float>& expectedOutput);
 		std::vector<float> getOutputError(const std::vector<float>& expectedOutput) const;
 		float getNetError(const std::vector<float>& expectedOutput) const;

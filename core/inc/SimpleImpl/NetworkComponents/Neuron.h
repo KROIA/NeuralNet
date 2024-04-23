@@ -64,6 +64,15 @@ namespace NeuralNet
 			return m_activationType;
 		}
 
+		void enableNormalizedNetinput(bool enable)
+		{
+			m_normalizeNetinput = enable;
+		}
+		bool isNetinputNormalizedEnabled() const
+		{
+			return m_normalizeNetinput;
+		}
+
 		/*void setInputValues(const std::vector<float>& values)
 		{
 			m_inputValues = values;
@@ -141,6 +150,7 @@ namespace NeuralNet
 		float m_netinput = 0.f;
 		float m_output = 0.f;
 		float m_bias;
+		bool m_normalizeNetinput = false;
 		Activation::Type m_activationType = Activation::Type::linear;
 		Activation::ActivationFunction m_activationFunction;
 		ID m_id;

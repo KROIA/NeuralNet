@@ -15,6 +15,9 @@ namespace NeuralNet
 			Backpropagation();
 			~Backpropagation();
 
+			void setLearningRate(float learningRate){ m_learningRate = learningRate;}
+			float getLearningRate() const { return m_learningRate; }
+
 			void learn(std::vector<Layer>& layers, const std::vector<float> &expectedOutput);
 		
 			static float getError(float output, float expectedOutput);

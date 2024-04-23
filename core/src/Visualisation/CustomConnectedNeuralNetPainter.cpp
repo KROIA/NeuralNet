@@ -23,8 +23,6 @@ namespace NeuralNet
 		}
 		void CustomConnectedNeuralNetPainter::buildNetwork()
 		{
-			unsigned int layerSpacing = 50;
-			unsigned int neuronSpacing = 30;
 			//unsigned int neuronRadius = 5;
 
 			std::unordered_map<Neuron::ID, NeuronPainterData> cpy = m_neuronPainters;
@@ -56,11 +54,11 @@ namespace NeuralNet
 			for (auto& layer : networkData.layers)
 			{
 				int neuronIndex = 0;
-				float yOffset = (maxLayerSize - layer.neurons.size()) * neuronSpacing / 2;
+				float yOffset = (maxLayerSize - layer.neurons.size()) * m_neuronSpacing / 2;
 				for (auto& neuron : layer.neurons)
 				{
 					//float signalValue = neuron->getOutput();
-					sf::Vector2f position(xOffset, yOffset + neuronIndex * neuronSpacing);
+					sf::Vector2f position(xOffset, yOffset + neuronIndex * m_neuronSpacing);
 					//pointPainter.addPoint(position, neuronRadius,
 					//	Utilities::signalColor(signalValue * m_signalSatturation));
 
@@ -72,18 +70,77 @@ namespace NeuralNet
 					}
 					data.position = position;
 					data.painter->setPosition(position);
+					data.painter->setRadius(m_neuronRadius);
 					//neuronPositions[neuron] = position;
 
 					neuronIndex++;
 				}
-				xOffset += layerSpacing;
+				xOffset += m_layerSpacing;
 			}
 
+		}
+		void CustomConnectedNeuralNetPainter::setNeuronRadius(float radius)
+		{ 
+			m_neuronRadius = radius;
+			for (auto& neuronPainter : m_neuronPainters)
+			{
+				neuronPainter.second.painter->setRadius(radius);
+			}
 		}
 
 		void CustomConnectedNeuralNetPainter::destroyNetwork()
 		{
 			m_neuronPainters.clear();
+		}
+
+		void CustomConnectedNeuralNetPainter::resetPositions()
+		{
+			NetworkData& networkData = m_neuralNet->m_networkData;
+
+			size_t maxLayerSize = 0;
+			for (auto& layer : networkData.layers)
+			{
+				if (layer.neurons.size() > maxLayerSize)
+					maxLayerSize = layer.neurons.size();
+			}
+
+			float xOffset = 0;
+			for (auto& layer : networkData.layers)
+			{
+				int neuronIndex = 0;
+				float yOffset = (maxLayerSize - layer.neurons.size()) * m_neuronSpacing / 2;
+				for (auto& neuron : layer.neurons)
+				{
+					//float signalValue = neuron->getOutput();
+					sf::Vector2f position(xOffset, yOffset + neuronIndex * m_neuronSpacing);
+					//pointPainter.addPoint(position, neuronRadius,
+					//	Utilities::signalColor(signalValue * m_signalSatturation));
+
+					NeuronPainterData& data = m_neuronPainters[neuron->getID()];
+					data.position = position;
+					data.painter->setPosition(position);
+					
+					//neuronPositions[neuron] = position;
+
+					neuronIndex++;
+				}
+				xOffset += m_layerSpacing;
+			}
+		}
+
+		void CustomConnectedNeuralNetPainter::resetLayerPosition(unsigned int layer, const sf::Vector2f& position, const sf::Vector2f& spacing)
+		{
+			NetworkData& networkData = m_neuralNet->m_networkData;
+			if (layer < networkData.layers.size())
+			{
+				Layer& layerData = networkData.layers[layer];
+				for (size_t i=0; i<layerData.neurons.size(); ++i)
+				{
+					NeuronPainterData& data = m_neuronPainters[layerData.neurons[i]->getID()];
+					data.position = spacing * (float)i + position;
+					data.painter->setPosition(data.position);
+				}
+			}
 		}
 
 		Neuron::ID CustomConnectedNeuralNetPainter::getNeuronAtPosition(const sf::Vector2f& position, bool& success) const
@@ -98,6 +155,21 @@ namespace NeuralNet
 			}
 			success = false;
 			return 0;
+		}
+
+		void CustomConnectedNeuralNetPainter::moveLayer(unsigned int layer, const sf::Vector2f& offset)
+		{
+			NetworkData& networkData = m_neuralNet->m_networkData;
+			if(layer < networkData.layers.size())
+			{
+				Layer& layerData = networkData.layers[layer];
+				for (auto& neuron : layerData.neurons)
+				{
+					NeuronPainterData& data = m_neuronPainters[neuron->getID()];
+					data.position += offset;
+					data.painter->setPosition(data.position);
+				}
+			}
 		}
 
 		void CustomConnectedNeuralNetPainter::drawComponent(

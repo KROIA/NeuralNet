@@ -108,6 +108,11 @@ namespace NeuralNet
 		{
 			m_inputValues = values;
 		}
+		for (size_t i = 0; i < m_inputValues.size(); ++i)
+		{
+			if(isnan(m_inputValues[i]) || isinf(m_inputValues[i]))
+				m_inputValues[i] = 0.0f;
+		}
 	}
 	void CustomConnectedNeuralNet::setInputValue(unsigned int index, float values)
 	{
@@ -366,6 +371,13 @@ namespace NeuralNet
 			}
 		}
 	}
+	void CustomConnectedNeuralNet::enableNormalizedNetInput(bool enable)
+	{
+		for(auto& neuron : m_networkData.neurons)
+		{
+			neuron.second->enableNormalizedNetinput(enable);
+		}
+	}
 
 
 	void CustomConnectedNeuralNet::learn(const std::vector<float>& expectedOutput)
@@ -392,8 +404,10 @@ namespace NeuralNet
 		float netError = 0;
 		for (size_t i = 0; i < getOutputCount(); ++i)
 		{
-			float diff = m_backProp.getError(getOutputValue(i), expectedOutput[i]);
-			netError += diff * diff;
+			float outp = getOutputValue(i);
+			float expected = expectedOutput[i];
+			float diff = m_backProp.getError(outp, expected);
+			netError += std::abs(diff);
 		}
 		netError /= getOutputCount();
 		return netError;

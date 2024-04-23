@@ -28,6 +28,14 @@ namespace NeuralNet
 			{
 				return getPosition();// -sf::Vector2f(m_radius, 0);
 			}
+			void setRadius(float radius)
+			{
+				m_radius = radius;
+			}
+			float getRadius() const
+			{
+				return m_radius;
+			}
 
 			void setCanvasParent(QSFML::Canvas* parent) override
 			{

@@ -63,7 +63,12 @@ namespace NeuralNet
 					Activation::ActivationFunction deriv = Activation::getActivationDerivetiveFunction(neuron->getActivationType());
 					std::vector<Connection*> connections = neuron->getInputConnections();
 
-					float error = deriv(neuron->getNetInput()) * neuronError[neuron];
+					float netInput = neuron->getNetInput();
+					if(neuron->isNetinputNormalizedEnabled())
+					{
+						netInput *= neuron->getInputConnections().size() + 1;
+					}
+					float error = deriv(netInput) * neuronError[neuron];
 
 					for (size_t y = 0; y < connections.size(); ++y)
 					{

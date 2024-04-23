@@ -26,6 +26,7 @@ namespace NeuralNet
 		m_activationType = neuron.m_activationType;
 		m_activationFunction = Activation::getActivationFunction(m_activationType);
 		m_bias = neuron.m_bias;
+		m_normalizeNetinput = neuron.m_normalizeNetinput;
 	}
 	Neuron::Neuron(Neuron&& neuron) noexcept
 		: m_id(neuron.m_id)
@@ -35,6 +36,7 @@ namespace NeuralNet
 		m_activationType = neuron.m_activationType;
 		m_activationFunction = Activation::getActivationFunction(m_activationType);
 		m_bias = neuron.m_bias;
+		m_normalizeNetinput = neuron.m_normalizeNetinput;
 	}
 	
 	Neuron& Neuron::operator=(const Neuron& neuron)
@@ -45,6 +47,7 @@ namespace NeuralNet
 		m_activationType = neuron.m_activationType;
 		m_activationFunction = Activation::getActivationFunction(m_activationType);
 		m_bias = neuron.m_bias;
+		m_normalizeNetinput = neuron.m_normalizeNetinput;
 		return *this;
 	}
 	Neuron& Neuron::operator=(Neuron&& neuron) noexcept
@@ -55,6 +58,7 @@ namespace NeuralNet
 		m_activationType = neuron.m_activationType;
 		m_activationFunction = Activation::getActivationFunction(m_activationType);
 		m_bias = neuron.m_bias;
+		m_normalizeNetinput = neuron.m_normalizeNetinput;
 		return *this;
 	}
 	Neuron::~Neuron()
@@ -76,8 +80,17 @@ namespace NeuralNet
 		{
 			netinput += conn->getOutputValue();
 		}
+		if(m_normalizeNetinput)
+			netinput/=(m_inputConnections.size() + 1);
 		setNetInput(netinput);
 		setOutput(getActivationFunction()(netinput));
+
+#ifdef _DEBUG
+		if (std::isnan(m_netinput) || std::isinf(m_netinput))
+			throw std::runtime_error("Neuron netinput is NaN or Inf");
+		if (std::isnan(m_output) || std::isinf(m_netinput))
+			throw std::runtime_error("Neuron output is NaN or Inf");
+#endif
 	}
 
 	Visualisation::NeuronPainter* Neuron::createVisualisation()

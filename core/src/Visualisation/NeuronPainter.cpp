@@ -25,7 +25,9 @@ namespace NeuralNet
 			sf::CircleShape shape(m_radius);
 			float signalValue = m_neuron->getOutput();
 			shape.setOrigin(m_radius, m_radius);
-			shape.setFillColor(Utilities::signalColor(signalValue * m_saturation));
+			sf::Color signalColor = Utilities::signalColor(signalValue * m_saturation);
+			signalColor.a = 255;
+			shape.setFillColor(signalColor);
 			shape.setOutlineColor(sf::Color::Black);
 			shape.setOutlineThickness(1);
 			target.draw(shape, states);
