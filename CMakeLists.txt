@@ -48,6 +48,7 @@ set(QT_DEPLOY ON)	                            # <AUTO_REPLACED>
 set(QT_MODULES
   Core
   Gui
+  Widgets
 )
 
 # Library file name settings

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "NeuralNet_base.h"
-
+#include <cmath>
 
 namespace NeuralNet
 {

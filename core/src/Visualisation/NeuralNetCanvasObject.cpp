@@ -1,6 +1,7 @@
 #include "Visualisation/NeuralNetCanvasObject.h"
 #include <QLayout>
-#include <QWindow >
+#include <QWindow>
+#include <iostream>
 
 namespace NeuralNet
 {
