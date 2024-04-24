@@ -42,7 +42,7 @@ void MainWindow::setupCanvas()
     m_canvas = new Canvas(ui->canvasWidget, settings);
 
     DefaultEditor* defaultEditor = new DefaultEditor("Grid", sf::Vector2f(1600, 16000));
-    defaultEditor->getCamera()->setMinZoom(0.01);
+    defaultEditor->getCamera()->setMinZoom(0.05);
     m_canvas->addObject(defaultEditor);
     qDebug() << defaultEditor->toString().c_str();
 
@@ -64,7 +64,7 @@ void MainWindow::setupCanvas()
     outps = m_dataset.getOutputSize();
     
     
-    m_net = new NeuralNet::FullConnectedNeuralNet(inps, layerCount, 10, outps);
+    m_net = new NeuralNet::FullConnectedNeuralNet(inps, layerCount,15, outps);
 
     m_net->setActivationType(NeuralNet::Activation::Type::tanh_);
     m_net->setLayerActivationType(layerCount+1, NeuralNet::Activation::Type::tanh_);
@@ -90,7 +90,7 @@ void MainWindow::setupCanvas()
 			m_netObject1->setNeuronPosition(x * dim.y + y, sf::Vector2f(xPos, yPos));
         }
     }
-    float layerSpacing = 100;
+    float layerSpacing = 300;
     for (unsigned int i = 0; i < layerCount+1; ++i)
     {
         m_netObject1->resetLayerPosition(i+1, sf::Vector2f(spacing.x* dim.x+50 + i* layerSpacing, 0), sf::Vector2f(0, 30));
@@ -144,7 +144,9 @@ void MainWindow::train(size_t iterations)
         error += m_net->getNetError(dataPoint.labels);
 	}
 	error /= iterations;
-	std::cout << "Error: " << error << "\n";
+    static float averageError = 0;
+    averageError = 0.99f * averageError + 0.01f * error;
+	std::cout << "Error: " << averageError << "\n";
 }
 float MainWindow::test(const Dataset::DataPoint& dataPoint)
 {
