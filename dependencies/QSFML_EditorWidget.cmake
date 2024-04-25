@@ -4,7 +4,7 @@ include(FetchContent)
 function(dep SHARED_LIB STATIC_LIB STATIC_PROFILE_LIB)
     # Define the git repository and tag to download from
     set(LIB_NAME QSFML_EditorWidget)
-    set(GIT_REPO https://github.com/KROIA/SFML_EditorWidget.git)
+    set(GIT_REPO https://github.com/KROIA/QSFML_EditorWidget.git)
     set(GIT_TAG main)
 
     FetchContent_Declare(
