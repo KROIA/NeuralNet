@@ -63,7 +63,7 @@ namespace NeuralNet
 					//	Utilities::signalColor(signalValue * m_signalSatturation));
 
 					NeuronPainterData &data = m_neuronPainters[neuron->getID()];
-					auto& oldDataIt = cpy.find(neuron->getID());
+					const auto& oldDataIt = cpy.find(neuron->getID());
 					if (oldDataIt != cpy.end())
 					{
 						position = oldDataIt->second.position;

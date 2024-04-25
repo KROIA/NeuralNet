@@ -166,7 +166,7 @@ namespace NeuralNet
 		// set Bias
 		for (auto& pair : network.neurons)
 		{
-			auto& it = biasList.find(pair.first);
+			const auto& it = biasList.find(pair.first);
 			if (it != biasList.end())
 			{
 				pair.second->setBias(it->second);
