@@ -22,6 +22,7 @@ private slots:
 
     void on_pauseTraining_pushButton_clicked();
     void on_testNext_pushButton_clicked();
+    void on_reset_pushButton_clicked();
 private:
     void setupCanvas();
     void closeEvent(QCloseEvent* event) override;

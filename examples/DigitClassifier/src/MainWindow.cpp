@@ -64,12 +64,12 @@ void MainWindow::setupCanvas()
     outps = m_dataset.getOutputSize();
     
     
-    m_net = new NeuralNet::FullConnectedNeuralNet(inps, layerCount,15, outps);
+    m_net = new NeuralNet::FullConnectedNeuralNet(inps, layerCount, 6, outps);
 
     m_net->setActivationType(NeuralNet::Activation::Type::tanh_);
     m_net->setLayerActivationType(layerCount+1, NeuralNet::Activation::Type::tanh_);
     //m_net->setLayerActivationType(2, NeuralNet::Activation::Type::tanh_);
-    m_net->setLearningRate(0.01);
+    m_net->setLearningRate(0.1);
     //m_net->enableNormalizedNetInput(true);
 
     m_netObject1 = new NeuralNet::NeuralNetCanvasObject(m_net, "NeuralNetCanvasObject1");
@@ -126,6 +126,15 @@ void MainWindow::on_testNext_pushButton_clicked()
     float error = test(dataPoint);
     std::cout << "Error: " << error << "\n";
 }
+void MainWindow::on_reset_pushButton_clicked()
+{
+    auto& w = m_net->getWeights();
+    for (size_t i = 0; i < w.size(); ++i)
+    {
+        w[i] = (float)(rand() % 2000) / 1000 - 1.0f;
+    }
+    m_net->setWeights(w);
+}
 
 
 void MainWindow::train(size_t iterations)
@@ -134,6 +143,18 @@ void MainWindow::train(size_t iterations)
         return;
     const std::vector<Dataset::DataPoint> &dataset = m_dataset.getData();
     float error = 0;
+    std::unordered_map<NeuralNet::Neuron::ID, NeuralNet::Neuron*> neurons = m_net->getNeurons();
+    struct ChangeTrack
+    {
+        float lastVal = 0;
+        float maxChange = 0;
+    };
+    std::unordered_map<NeuralNet::Neuron::ID, ChangeTrack> maxChangeList;
+    const bool checkUnchangedNeurons = true;
+
+    static std::vector<float> digitErrors;
+    if (digitErrors.size() != m_net->getOutputCount())
+        digitErrors = std::vector<float>(m_net->getOutputCount(), 0);
     for (size_t i = 0; i < iterations; i++)
 	{
 		//for (const Dataset::DataPoint& dataPoint : dataset)
@@ -141,12 +162,60 @@ void MainWindow::train(size_t iterations)
 		m_net->setInputValues(dataPoint.features);
 		m_net->update();
 		m_net->learn(dataPoint.labels);
-        error += m_net->getNetError(dataPoint.labels);
+        float netError = m_net->getNetError(dataPoint.labels);
+        error += netError;
+        for(size_t j=0; j<dataPoint.labels.size(); ++j)
+            if (dataPoint.labels[j] > 0.9)
+            {
+                digitErrors[j] = digitErrors[j] * 0.99 + netError * 0.01;
+                break;
+            }
+        
+
+        if (checkUnchangedNeurons)
+        {
+            for (auto& neuron : neurons)
+            {
+                if (neuron.second->getInputConnections().size() == 0)
+                    continue;
+                float neuronOutput = neuron.second->getOutput();
+                if (maxChangeList.find(neuron.second->getID()) == maxChangeList.end())
+                {
+                    maxChangeList[neuron.second->getID()].lastVal = neuronOutput;
+                    maxChangeList[neuron.second->getID()].maxChange = 0;
+                    continue;
+                }
+                ChangeTrack current = maxChangeList[neuron.second->getID()];
+                float diff = std::abs(neuronOutput - current.lastVal);
+                maxChangeList[neuron.second->getID()].lastVal = neuronOutput;
+                if (diff > current.maxChange)
+                    maxChangeList[neuron.second->getID()].maxChange = diff;
+            }
+        }
 	}
+    if (checkUnchangedNeurons)
+    {
+        for (auto& neuron : maxChangeList)
+        {
+            float diff = neuron.second.maxChange;
+            if (diff < 0.3)
+            {
+                const auto& inputs = m_net->getNeuron(neuron.first)->getInputConnections();
+                for (auto& inp : inputs)
+                    inp->setWeight((float)(rand() % 2000) / 1000 - 1.f);
+            }
+        }
+    }
+
 	error /= iterations;
     static float averageError = 0;
     averageError = 0.99f * averageError + 0.01f * error;
-	std::cout << "Error: " << averageError << "\n";
+	std::cout << "Error: " << averageError << "\t";
+    for (size_t j = 0; j < digitErrors.size(); ++j)
+    {
+        std::cout << "[" << j << ":" << digitErrors[j] << "] ";
+    }
+    std::cout << "\n";
 }
 float MainWindow::test(const Dataset::DataPoint& dataPoint)
 {

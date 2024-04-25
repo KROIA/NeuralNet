@@ -66,6 +66,7 @@ namespace NeuralNet
 		const Neuron* getNeuron(Neuron::ID id) const;
 		Neuron* getNeuron(unsigned int layerIdx, unsigned int neuronIdx);
 		const Neuron* getNeuron(unsigned int layerIdx, unsigned int neuronIdx) const;
+		std::unordered_map<Neuron::ID, Neuron*> getNeurons() const;
 
 		void update() override;
 

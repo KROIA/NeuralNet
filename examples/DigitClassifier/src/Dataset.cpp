@@ -110,5 +110,46 @@ std::vector<float> Dataset::loadImage(const std::string& path)
 			image.push_back((float)gray / 255.0f);
 		}
 	}
-    return image;
+    //return image;
+    return centerImage(image);
+}
+
+std::vector<float> Dataset::centerImage(const std::vector<float> &orig)
+{
+	sf::Vector2f massCenterPos(0, 0);
+	sf::Vector2i center(m_dimensions.x / 2, m_dimensions.y / 2);
+	float mass = 0;
+	std::vector<float> centered(m_dimensions.x * m_dimensions.y, 0);
+	/*orig[0] = 1;
+	orig[m_dimensions.y-1] = 1;
+	orig[(m_dimensions.x-1)* m_dimensions.y] = 1;
+	orig[(m_dimensions.x)* m_dimensions.y-1] = 1;*/
+
+
+	for (unsigned int x = 0; x < m_dimensions.x; x++)
+	{
+		for (unsigned int y = 0; y < m_dimensions.y; y++)
+		{
+			float subMass = (float)orig[x * m_dimensions.y + y];
+			massCenterPos += sf::Vector2f(x, y) * subMass;
+			mass += subMass;
+		}
+	}
+	massCenterPos /= mass;
+	sf::Vector2i offCenterPos(sf::Vector2i(massCenterPos) - center);
+	for (unsigned int x = 0; x < m_dimensions.x; x++)
+	{
+		for (unsigned int y = 0; y < m_dimensions.y; y++)
+		{
+			float val = 0;
+			sf::Vector2u sourcePos(x + offCenterPos.x, y + offCenterPos.y);
+			if (sourcePos.x < m_dimensions.x && sourcePos.y < m_dimensions.y)
+			{
+				val = orig[sourcePos.x * m_dimensions.y + sourcePos.y];
+			}
+			centered[x * m_dimensions.y + y] = val;
+		}
+	}
+
+	return centered;
 }

@@ -166,6 +166,10 @@ namespace NeuralNet
 			return nullptr;
 		return layer.neurons[neuronIdx];
 	}
+	std::unordered_map<Neuron::ID, Neuron*> CustomConnectedNeuralNet::getNeurons() const
+	{
+		return m_networkData.neurons;
+	}
 
 	Activation::Type CustomConnectedNeuralNet::getActivationType(Neuron::ID id) const
 	{

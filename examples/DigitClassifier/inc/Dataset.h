@@ -26,6 +26,7 @@ public:
 
 private:
 	std::vector<float> loadImage(const std::string& path);
+	std::vector<float> centerImage(const std::vector<float> &orig);
 
 	std::vector<DataPoint> m_data;
 	sf::Vector2u m_dimensions;

@@ -65,6 +65,19 @@
         <string>Test next</string>
        </property>
       </widget>
+      <widget class="QPushButton" name="reset_pushButton">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>40</y>
+         <width>80</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Reset</string>
+       </property>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -75,7 +88,7 @@
      <x>0</x>
      <y>0</y>
      <width>1469</width>
-     <height>20</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>
