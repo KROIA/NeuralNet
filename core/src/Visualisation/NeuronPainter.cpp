@@ -29,7 +29,7 @@ namespace NeuralNet
 			signalColor.a = 255;
 			shape.setFillColor(signalColor);
 			shape.setOutlineColor(sf::Color::Black);
-			shape.setOutlineThickness(1);
+			shape.setOutlineThickness(m_outlineThickness);
 			target.draw(shape, states);
 
 			//std::vector<sf::Vertex> points(20);
@@ -38,7 +38,8 @@ namespace NeuralNet
 			//states.transform.translate(sf::Vector2f(m_radius*0.4, 0));
 			//target.draw(points.data(), points.size(), sf::LineStrip, states);
 
-			drawFunctionGraph(target, states);
+			if(m_enableGraph)
+				drawFunctionGraph(target, states);
 
 			m_idText.draw(target, states);
 		}

@@ -26,7 +26,7 @@ namespace NeuralNet
 			}
 			sf::Vector2f getInputConnectionPoint() const
 			{
-				return getPosition();// -sf::Vector2f(m_radius, 0);
+				return getPosition() -sf::Vector2f(m_radius, 0);
 			}
 			void setRadius(float radius)
 			{
@@ -69,6 +69,9 @@ namespace NeuralNet
 
 			float m_radius = 10;
 			float m_saturation = 0.5;
+			float m_outlineThickness = 1;
+
+			bool m_enableGraph = true;
 		};
 	}
 }
