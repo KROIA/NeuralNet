@@ -104,10 +104,34 @@ namespace NeuralNet
 		splitIntoLayers(network);
 
 		
+		// Remove input and output neurons to reinsert them in a designated input/output layer
+		for (size_t i = 0; network.layers.size(); ++i)
+		{
+			Layer layer = network.layers[i];
+			Layer newLayer;
+			newLayer.inputConnections.reserve(layer.inputConnections.size());
+			newLayer.neurons.reserve(layer.neurons.size());
+			
+			for (const Neuron::ID &id : inputNeuronIDs)
+			{
+				bool idFound = false;
+				for(const Neuron* n : layer.neurons)
+					if (n->getID() == id)
+					{
+						idFound = true;
+						break;
+					}
+				if (!idFound)
+				{
+					newLayer.neurons.push_back(network.neurons[id]);
+					// Add connections back...
+				}
+			}
+		}
+
 		Layer lastLayer = network.layers[network.layers.size() - 1];
 		if (lastLayer.neurons.size() != outputNeuronIDs.size())
 		{
-
 			Layer newSecondlastLayer;
 			Layer newOutputLayer;
 			for (const auto& id : outputNeuronIDs)
