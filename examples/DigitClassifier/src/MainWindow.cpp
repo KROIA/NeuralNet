@@ -105,6 +105,9 @@ void MainWindow::setupCanvas()
     }
     
     m_canvas->addObject(m_netObject1);
+    m_canvas->applyObjectChanges();
+
+    std::cout << "Objects: \n" << m_canvas->getObjectsTreeString() << "\n";
 }
 void MainWindow::closeEvent(QCloseEvent* event)
 {
