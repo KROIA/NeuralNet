@@ -1,6 +1,7 @@
 #include "SimpleImpl/Nets/CustomConnectedNeuralNet.h"
 #include "SimpleImpl/NetworkComponents/InputNeuron.h"
 #include "Visualisation/CustomConnectedNeuralNetPainter.h"
+#include <iostream>
 
 namespace NeuralNet
 {
