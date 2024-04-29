@@ -34,7 +34,7 @@ void MainWindow::setupCanvas()
     //settings.layout.autoAjustSize = false;
     settings.layout.fixedSize = sf::Vector2u(300, 100);
     settings.contextSettings.antialiasingLevel = 8;
-    settings.timing.frameTime = 0;
+    settings.timing.frameTime = 0.015;
     //settings.updateControlls.enableMultithreading = false;
     //settings.updateControlls.enablePaintLoop = false;
     //settings.updateControlls.enableEventLoop = false;
@@ -62,9 +62,15 @@ void MainWindow::setupCanvas()
     }
     inps = m_dataset.getInputSize();
     outps = m_dataset.getOutputSize();
+    std::vector < NeuralNet::Neuron::ID> inputIDs(inps, 0);
+    std::vector < NeuralNet::Neuron::ID> outputIDs(outps, 0);
+    for (size_t i = 0; i < inputIDs.size(); ++i)
+        inputIDs[i] = i;
+    for (size_t i = 0; i < outputIDs.size(); ++i)
+        outputIDs[i] = inputIDs.size()+i;
     
     
-    m_net = new NeuralNet::FullConnectedNeuralNet(inps, layerCount, 6, outps);
+    m_net = new NeuralNet::FullConnectedNeuralNet(inputIDs, layerCount, 6, outputIDs);
 
     m_net->setActivationType(NeuralNet::Activation::Type::tanh_);
     m_net->setLayerActivationType(layerCount+1, NeuralNet::Activation::Type::tanh_);
@@ -77,6 +83,8 @@ void MainWindow::setupCanvas()
     m_netObject1->setPosition(sf::Vector2f(0, 0));
    // m_netObject1->setNeuronRadius(1);
     m_netObject1->resetPositions();
+    m_netObject1->enableNeuronGraphOfLayer(m_netObject1->getInputLayerIndex(), false);
+    m_netObject1->enableNeuronTextOfLayer(m_netObject1->getInputLayerIndex(), false);
 
     // Set neuron positions
     sf::Vector2u dim = m_dataset.getDimensions();
@@ -97,6 +105,9 @@ void MainWindow::setupCanvas()
     }
     
     m_canvas->addObject(m_netObject1);
+    m_canvas->applyObjectChanges();
+
+    std::cout << "Objects: \n" << m_canvas->getObjectsTreeString() << "\n";
 }
 void MainWindow::closeEvent(QCloseEvent* event)
 {

@@ -22,8 +22,8 @@ namespace NeuralNet
 		friend class Visualisation::CustomConnectedNeuralNetPainter;
 	public:
 		CustomConnectedNeuralNet(
-			unsigned int inputSize,
-			unsigned int outputSize);
+			const std::vector<Neuron::ID>& inputNeuronIDs,
+			const std::vector<Neuron::ID>& outputNeuronIDs);
 
 		~CustomConnectedNeuralNet();
 
@@ -31,7 +31,7 @@ namespace NeuralNet
 		void clearConnections()
 		{
 			m_buildingConnections.clear();
-			m_activationFunctions.clear();
+			m_activationTypes.clear();
 			clearBiasList();
 		}
 		void addConnection(const ConnectionInfo& connectionInfo);
@@ -68,6 +68,8 @@ namespace NeuralNet
 		const Neuron* getNeuron(unsigned int layerIdx, unsigned int neuronIdx) const;
 		std::unordered_map<Neuron::ID, Neuron*> getNeurons() const;
 
+		//std::unordered_map<Neuron::ID, Neuron*> getNeurons_
+
 		void update() override;
 
 		Visualisation::CustomConnectedNeuralNetPainter* createVisualisation();
@@ -91,19 +93,35 @@ namespace NeuralNet
 		std::vector<float> getOutputError(const std::vector<float>& expectedOutput) const;
 		float getNetError(const std::vector<float>& expectedOutput) const;
 
+
+		unsigned int getInputLayerIndex() const
+		{
+			return 0;
+		}
+		unsigned int getOutputLayerIndex() const
+		{
+			return m_networkData.layers.size() - 1;
+		}
+
 	protected:
 		void removePainter(Visualisation::CustomConnectedNeuralNetPainter* painter);
+		void needsStructureUpdate()
+		{
+			m_networkStructureOutOfDate = true;
+		}
 		
-
+		bool m_networkStructureOutOfDate = true;
 		NetworkData m_networkData;
 		std::vector<ConnectionInfo> m_buildingConnections;
+		const std::vector<Neuron::ID> m_inputNeuronIDs;
+		const std::vector<Neuron::ID> m_outputNeuronIDs;
 
 		std::unordered_map<Neuron::ID, float> m_biasList;
-		std::unordered_map<Neuron::ID, Activation::Type> m_activationFunctions;
+		std::unordered_map<Neuron::ID, Activation::Type> m_activationTypes;
 		std::unordered_map<unsigned int, Activation::Type> m_defaultLayerActivationTypes;
 		Activation::Type m_defaultActivationType;
 
-		bool m_networkBuilt = false;
+		//bool m_networkBuilt = false;
 		std::vector<float> m_inputValues;
 		std::vector<float> m_outputValues;
 
@@ -120,8 +138,8 @@ namespace NeuralNet
 				const std::unordered_map<Neuron::ID, Activation::Type>& activationFunctions,
 				const std::unordered_map<unsigned int, Activation::Type> &defaultLayerActivationTypes,
 				Activation::Type defaultActivationType,
-				unsigned int inputCount, 
-				unsigned int outputCount,
+				const std::vector<Neuron::ID> &inputNeuronIDs,
+				const std::vector<Neuron::ID> &outputNeuronIDs,
 				NetworkData &network);
 
 			static void destroyNetwork(NetworkData& network);

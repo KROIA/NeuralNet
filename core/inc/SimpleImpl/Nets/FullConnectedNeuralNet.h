@@ -15,10 +15,10 @@ namespace NeuralNet
 	{
 	public:
 		FullConnectedNeuralNet(
-			unsigned int inputSize, 
+			const std::vector<Neuron::ID>& inputNeuronIDs,
 			unsigned int hiddenLayerCount, 
 			unsigned int hiddenLayerSize,
-			unsigned int outputSize);
+			const std::vector<Neuron::ID>& outputNeuronIDs);
 
 		~FullConnectedNeuralNet();
 

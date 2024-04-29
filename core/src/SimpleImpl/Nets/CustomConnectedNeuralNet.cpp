@@ -1,15 +1,18 @@
 #include "SimpleImpl/Nets/CustomConnectedNeuralNet.h"
 #include "SimpleImpl/NetworkComponents/InputNeuron.h"
 #include "Visualisation/CustomConnectedNeuralNetPainter.h"
+#include <iostream>
 
 namespace NeuralNet
 {
 	CustomConnectedNeuralNet::CustomConnectedNeuralNet(
-		unsigned int inputSize,
-		unsigned int outputSize)
-		: NeuralNetBase(inputSize, outputSize)
+		const std::vector<Neuron::ID>& inputNeuronIDs,
+		const std::vector<Neuron::ID>& outputNeuronIDs)
+		: NeuralNetBase(inputNeuronIDs.size(), outputNeuronIDs.size())
+		, m_inputNeuronIDs(inputNeuronIDs)
+		, m_outputNeuronIDs(outputNeuronIDs)
 	{
-		m_outputValues = std::vector<float>(outputSize, 0);
+		m_outputValues = std::vector<float>(outputNeuronIDs.size(), 0);
 	}
 
 	CustomConnectedNeuralNet::~CustomConnectedNeuralNet()
@@ -26,8 +29,8 @@ namespace NeuralNet
 
 	void CustomConnectedNeuralNet::addConnection(const ConnectionInfo& connectionInfo)
 	{
-		m_networkBuilt = false;
 		m_buildingConnections.push_back(connectionInfo);
+		needsStructureUpdate();
 	}
 	void CustomConnectedNeuralNet::addConnection(Neuron::ID fromNeuronID, Neuron::ID toNeuronID)
 	{
@@ -35,17 +38,16 @@ namespace NeuralNet
 	}
 	void CustomConnectedNeuralNet::addConnection(Neuron::ID fromNeuronID, Neuron::ID toNeuronID, float weight)
 	{
-		m_networkBuilt = false;
 		ConnectionInfo info;
 		info.fromNeuronID = fromNeuronID;
 		info.toNeuronID = toNeuronID;
 		info.weight = weight;
-		m_buildingConnections.push_back(info);
+		addConnection(info);
 	}
 	void CustomConnectedNeuralNet::setConnections(const std::vector<ConnectionInfo>& connections)
 	{
-		m_networkBuilt = false;
 		m_buildingConnections = connections;
+		needsStructureUpdate();
 	}
 	void CustomConnectedNeuralNet::removeConnection(Neuron::ID fromNeuronID, Neuron::ID toNeuronID)
 	{
@@ -54,6 +56,7 @@ namespace NeuralNet
 			if (it->fromNeuronID == fromNeuronID && it->toNeuronID == toNeuronID)
 			{
 				m_buildingConnections.erase(it);
+				needsStructureUpdate();
 				break;
 			}
 		}
@@ -79,21 +82,21 @@ namespace NeuralNet
 		CustomConnectedNeuralNetBuilder::buildNetwork(
 			m_buildingConnections, 
 			m_biasList,
-			m_activationFunctions, 
+			m_activationTypes, 
 			m_defaultLayerActivationTypes,
 			m_defaultActivationType,
-			getInputCount(), 
-			getOutputCount(),
+			m_inputNeuronIDs,
+			m_outputNeuronIDs,
 			m_networkData);
-		m_networkBuilt = true;
 		for (auto painter : m_painters)
 		{
 			painter->buildNetwork();
 		}
+		m_networkStructureOutOfDate = false;
 	}
 	void CustomConnectedNeuralNet::destroyNetwork()
 	{
-		m_networkBuilt = false;
+		needsStructureUpdate();
 		CustomConnectedNeuralNetBuilder::destroyNetwork(m_networkData);
 	}
 
@@ -187,7 +190,9 @@ namespace NeuralNet
 		{
 			it->second->setActivationType(type);
 		}
-		m_activationFunctions[id] = type;
+		else
+			needsStructureUpdate();
+		m_activationTypes[id] = type;
 	}
 	void CustomConnectedNeuralNet::setLayerActivationType(unsigned int layerIdx, Activation::Type type)
 	{
@@ -197,7 +202,7 @@ namespace NeuralNet
 			for (auto& neuron : m_networkData.layers[layerIdx].neurons)
 			{
 				neuron->setActivationType(type);
-				m_activationFunctions[neuron->getID()] = type;
+				m_activationTypes[neuron->getID()] = type;
 			}
 		}
 	}
@@ -215,8 +220,11 @@ namespace NeuralNet
 
 	void CustomConnectedNeuralNet::update()
 	{
-		if(!m_networkBuilt)	
+		if (m_networkStructureOutOfDate)
+		{
+			std::cout << "Network structure not updated, call CustomConnectedNeuralNet::buildNetwork() first\n";
 			return;
+		}
 		// Set input Values
 		std::vector<Layer> &layers = m_networkData.layers;
 		if(layers.size() == 0)

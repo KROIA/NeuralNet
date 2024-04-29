@@ -32,16 +32,11 @@ namespace NeuralNet
 			shape.setOutlineThickness(m_outlineThickness);
 			target.draw(shape, states);
 
-			//std::vector<sf::Vertex> points(20);
-			//getFunctionGraph(points, sf::Vector2f(m_radius, m_radius*0.5));
-
-			//states.transform.translate(sf::Vector2f(m_radius*0.4, 0));
-			//target.draw(points.data(), points.size(), sf::LineStrip, states);
-
 			if(m_enableGraph)
 				drawFunctionGraph(target, states);
 
-			m_idText.draw(target, states);
+			if(m_enableText)
+				m_idText.draw(target, states);
 		}
 
 		/*void NeuronPainter::getFunctionGraph(std::vector<sf::Vertex>& points, const sf::Vector2f scale) const

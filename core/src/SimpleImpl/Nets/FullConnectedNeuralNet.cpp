@@ -4,11 +4,11 @@
 namespace NeuralNet
 {
 	FullConnectedNeuralNet::FullConnectedNeuralNet(
-		unsigned int inputSize,
+		const std::vector<Neuron::ID>& inputNeuronIDs,
 		unsigned int hiddenLayerCount,
 		unsigned int hiddenLayerSize,
-		unsigned int outputSize)
-		: CustomConnectedNeuralNet(inputSize, outputSize)
+		const std::vector<Neuron::ID>& outputNeuronIDs)
+		: CustomConnectedNeuralNet(inputNeuronIDs, outputNeuronIDs)
 	{
 		if (hiddenLayerSize == 0 || hiddenLayerCount == 0)
 		{
@@ -18,23 +18,21 @@ namespace NeuralNet
 
 		std::vector<ConnectionInfo> connections;
 
-		Neuron::ID id = 0;
+		Neuron::ID id = inputNeuronIDs.size()+outputNeuronIDs.size();
 		// Create input layer
 		if (hiddenLayerSize > 0)
 		{
-			for (unsigned int i = 0; i < inputSize; i++)
+			for (unsigned int i = 0; i < inputNeuronIDs.size(); i++)
 			{
 				for (unsigned int j = 0; j < hiddenLayerSize; j++)
 				{
 					ConnectionInfo conInfo;
-					conInfo.fromNeuronID = id;
-					conInfo.toNeuronID = inputSize + j;
+					conInfo.fromNeuronID = inputNeuronIDs[i];
+					conInfo.toNeuronID = id + j;
 					conInfo.weight = QSFML::Utilities::RandomEngine::getFloat(-1, 1);
 					connections.push_back(conInfo);
 				}
-				id++;
 			}
-			//id += hiddenLayerSize;
 
 			// Create hidden layers
 			for (unsigned int i = 0; i < hiddenLayerCount - 1; i++)
@@ -57,11 +55,11 @@ namespace NeuralNet
 			// Create output layer
 			for (unsigned int i = 0; i < hiddenLayerSize; i++)
 			{
-				for (unsigned int j = 0; j < outputSize; j++)
+				for (unsigned int j = 0; j < outputNeuronIDs.size(); j++)
 				{
 					ConnectionInfo conInfo;
 					conInfo.fromNeuronID = id + i;
-					conInfo.toNeuronID = id + hiddenLayerSize + j;
+					conInfo.toNeuronID = outputNeuronIDs[j];
 					conInfo.weight = QSFML::Utilities::RandomEngine::getFloat(-1, 1);
 					connections.push_back(conInfo);
 				}
@@ -70,13 +68,13 @@ namespace NeuralNet
 		else
 		{
 			// No hidden layers
-			for (unsigned int i = 0; i < inputSize; i++)
+			for (unsigned int i = 0; i < inputNeuronIDs.size(); i++)
 			{
-				for (unsigned int j = 0; j < outputSize; j++)
+				for (unsigned int j = 0; j < outputNeuronIDs.size(); j++)
 				{
 					ConnectionInfo conInfo;
 					conInfo.fromNeuronID = id;
-					conInfo.toNeuronID = inputSize + j;
+					conInfo.toNeuronID = outputNeuronIDs[j];
 					conInfo.weight = QSFML::Utilities::RandomEngine::getFloat(-1, 1);
 					connections.push_back(conInfo);
 				}
