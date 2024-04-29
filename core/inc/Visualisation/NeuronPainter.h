@@ -37,13 +37,13 @@ namespace NeuralNet
 				return m_radius;
 			}
 
-			void setCanvasParent(QSFML::Canvas* parent) override
+			/*void setCanvasParent(QSFML::Canvas* parent) override
 			{
 				Drawable::setCanvasParent(parent);
 				m_idText.setCanvasParent(parent);
 				if(parent)
-					m_idText.setFont(parent->getTextFont());
-			}
+					m_idText.setFont(QSFML::Canvas::getDefaultTextFont());
+			}*/
 
 			bool contains(const sf::Vector2f& point) const
 			{

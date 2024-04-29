@@ -62,9 +62,15 @@ void MainWindow::setupCanvas()
     }
     inps = m_dataset.getInputSize();
     outps = m_dataset.getOutputSize();
+    std::vector < NeuralNet::Neuron::ID> inputIDs(inps, 0);
+    std::vector < NeuralNet::Neuron::ID> outputIDs(outps, 0);
+    for (size_t i = 0; i < inputIDs.size(); ++i)
+        inputIDs[i] = i;
+    for (size_t i = 0; i < outputIDs.size(); ++i)
+        outputIDs[i] = inputIDs.size()+i;
     
     
-    m_net = new NeuralNet::FullConnectedNeuralNet(inps, layerCount, 6, outps);
+    m_net = new NeuralNet::FullConnectedNeuralNet(inputIDs, layerCount, 6, outputIDs);
 
     m_net->setActivationType(NeuralNet::Activation::Type::tanh_);
     m_net->setLayerActivationType(layerCount+1, NeuralNet::Activation::Type::tanh_);

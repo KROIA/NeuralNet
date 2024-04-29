@@ -10,8 +10,8 @@ namespace NeuralNet
 		const std::unordered_map<Neuron::ID, Activation::Type>& activationFunctions, 
 		const std::unordered_map<unsigned int, Activation::Type>& defaultLayerActivationTypes,
 		Activation::Type defaultActivationType,
-		unsigned int inputCount, 
-		unsigned int outputCount,
+		const std::vector<Neuron::ID>& inputNeuronIDs,
+		const std::vector<Neuron::ID>& outputNeuronIDs,
 		NetworkData &network)
 	{
 		// Clear old network
@@ -38,7 +38,7 @@ namespace NeuralNet
 				ids[connection.toNeuronID] = true;
 			}
 		}
-		std::vector<Neuron::ID> sortedIds;
+		/*std::vector<Neuron::ID> sortedIds;
 		sortedIds.reserve(ids.size());
 		for (auto& id : ids)
 		{
@@ -59,38 +59,39 @@ namespace NeuralNet
 		for (unsigned int i = 0; i < outputCount; ++i)
 		{
 			outputNeurons[sortedIds[sortedIds.size() - 1 - i]] = true;
-		}
+		}*/
 
 
 
 		// Create neurons
+		// Create input neurons
+		for (const auto& id : inputNeuronIDs)
+		{
+			neurons[id] = new InputNeuron(id);
+		}
+		// Create output neurons
+		for (const auto& id : outputNeuronIDs)
+		{
+			neurons[id] = new Neuron(id);
+		}
 
 		for (auto& connection : uniqueConnections)
 		{
 			if (neurons.find(connection.fromNeuronID) == neurons.end())
-			{
-				if (inputNeurons.find(connection.fromNeuronID) != inputNeurons.end())
-				{
-					neurons[connection.fromNeuronID] = new InputNeuron(connection.fromNeuronID);
-				}
-				else
-				{
-					neurons[connection.fromNeuronID] = new Neuron(connection.fromNeuronID);
-				}
-			}
+				neurons[connection.fromNeuronID] = new Neuron(connection.fromNeuronID);
 			if(neurons.find(connection.toNeuronID) == neurons.end())
 				neurons[connection.toNeuronID] = new Neuron(connection.toNeuronID);
 		}
 
 		// Activation functions override
-		for (auto& type : activationFunctions)
+		/*for (auto& type : activationFunctions)
 		{
 			auto it = neurons.find(type.first);
 			if (it != neurons.end())
 			{
 				it->second->setActivationType(type.second);
 			}
-		}
+		}*/
 
 		// Create connections
 		connectionsOut.reserve(uniqueConnections.size());
@@ -104,14 +105,13 @@ namespace NeuralNet
 
 		
 		Layer lastLayer = network.layers[network.layers.size() - 1];
-		if (lastLayer.neurons.size() != outputNeurons.size())
+		if (lastLayer.neurons.size() != outputNeuronIDs.size())
 		{
 
 			Layer newSecondlastLayer;
 			Layer newOutputLayer;
-			for (auto& it : outputNeurons)
+			for (const auto& id : outputNeuronIDs)
 			{
-				Neuron::ID id = it.first;
 				for (int i = 0; i < lastLayer.neurons.size(); ++i)
 				{
 					if (lastLayer.neurons[i] == network.neurons[id])
@@ -287,7 +287,8 @@ namespace NeuralNet
 				{
 					Neuron* inputNeuron = connection->getStartNeuron();
 					NeuronInfo &info = neuronIDs[inputNeuron];
-					if (!info.visited)
+					// Also skip loopbacks for a Neuron connecting to it self
+					if (!info.visited && inputNeuron != connection->getEndNeuron())
 					{
 						allInputsVisited = false;
 						break;
