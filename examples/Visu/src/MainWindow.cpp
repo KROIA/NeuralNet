@@ -105,7 +105,8 @@ void MainWindow::setupCanvas()
     // m_cuomNet->addConnection(2, 3, -1);
     m_customNet->addConnection(0, 3, -0.5);
     //m_customNet->addConnection(0, 4);
-    m_customNet->addConnection(1, 3, -2);
+    m_customNet->addConnection(3, 2, -2);
+    m_customNet->addConnection(1, 2, -2);
    // m_customNet->addConnection(2, 3, 0.1);
     m_customNet->setBias(3, -1);
 

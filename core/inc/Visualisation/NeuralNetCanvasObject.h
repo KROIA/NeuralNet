@@ -34,9 +34,17 @@ namespace NeuralNet
 		void resetLayerPosition(unsigned int layer, const sf::Vector2f& position, const sf::Vector2f& spacing)
 		{ m_neuralNetPainter->resetLayerPosition(layer, position, spacing); }
 		
+		// Enable/Disable the graph of the neuron
+		bool isNeuronGraphEnabled(Neuron::ID id) const { return m_neuralNetPainter->isNeuronGraphEnabled(id); }
+		void enableNeuronGraph(Neuron::ID id, bool enable){ m_neuralNetPainter->enableNeuronGraph(id, enable); }
+		void enableNeuronGraph(bool enable){ m_neuralNetPainter->enableNeuronGraph(enable); }
+		void enableNeuronGraphOfLayer(unsigned int layer, bool enable){ m_neuralNetPainter->enableNeuronGraphOfLayer(layer, enable); }
 
-
-		void update() override;
+		// Enable/Disable the text of the neuron
+		bool isNeuronTextEnabled(Neuron::ID id) const { return m_neuralNetPainter->isNeuronTextEnabled(id); }
+		void enableNeuronText(Neuron::ID id, bool enable){ m_neuralNetPainter->enableNeuronText(id, enable); }
+		void enableNeuronText(bool enable){ m_neuralNetPainter->enableNeuronText(enable); }
+		void enableNeuronTextOfLayer(unsigned int layer, bool enable){ m_neuralNetPainter->enableNeuronTextOfLayer(layer, enable); }
 
 		void setDragingGridSize(int gridSize)
 		{
@@ -46,6 +54,25 @@ namespace NeuralNet
 		{
 			return m_dragData.gridSize;
 		}
+
+		CustomConnectedNeuralNet* getNeuralNet() const
+		{
+			return m_neuralNet;
+		}
+		unsigned int getInputLayerIndex() const
+		{
+			return m_neuralNet->getInputLayerIndex();
+		}
+		unsigned int getOutputLayerIndex() const
+		{
+			return m_neuralNet->getOutputLayerIndex();
+		}
+
+		void update() override;
+
+		
+
+
 
 	private slots:
 		void onMouseFallingEdge();

@@ -36,14 +36,22 @@ namespace NeuralNet
 			{
 				return m_radius;
 			}
-
-			/*void setCanvasParent(QSFML::Canvas* parent) override
+			bool isGraphEnabled() const
 			{
-				Drawable::setCanvasParent(parent);
-				m_idText.setCanvasParent(parent);
-				if(parent)
-					m_idText.setFont(QSFML::Canvas::getDefaultTextFont());
-			}*/
+				return m_enableGraph;
+			}
+			void enableGraph(bool enable)
+			{
+				m_enableGraph = enable;
+			}
+			bool isTextEnabled() const
+			{
+				return m_enableText;
+			}
+			void enableText(bool enable)
+			{
+				m_enableText = enable;
+			}
 
 			bool contains(const sf::Vector2f& point) const
 			{
@@ -59,8 +67,6 @@ namespace NeuralNet
 
 			void drawComponent(sf::RenderTarget& target, sf::RenderStates states) const override;
 
-
-			//void getFunctionGraph(std::vector<sf::Vertex>& points, const sf::Vector2f scale) const;
 			void drawFunctionGraph(sf::RenderTarget& target, sf::RenderStates states) const;
 
 			Neuron *m_neuron;
@@ -72,6 +78,7 @@ namespace NeuralNet
 			float m_outlineThickness = 1;
 
 			bool m_enableGraph = true;
+			bool m_enableText = true;
 		};
 	}
 }

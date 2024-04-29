@@ -93,6 +93,16 @@ namespace NeuralNet
 		std::vector<float> getOutputError(const std::vector<float>& expectedOutput) const;
 		float getNetError(const std::vector<float>& expectedOutput) const;
 
+
+		unsigned int getInputLayerIndex() const
+		{
+			return 0;
+		}
+		unsigned int getOutputLayerIndex() const
+		{
+			return m_networkData.layers.size() - 1;
+		}
+
 	protected:
 		void removePainter(Visualisation::CustomConnectedNeuralNetPainter* painter);
 		void needsStructureUpdate()

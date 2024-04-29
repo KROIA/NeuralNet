@@ -105,31 +105,70 @@ namespace NeuralNet
 
 		
 		// Remove input and output neurons to reinsert them in a designated input/output layer
-		for (size_t i = 0; network.layers.size(); ++i)
+		std::vector<Neuron::ID> inputOutputNeuronIDs;
+		inputOutputNeuronIDs.reserve(inputNeuronIDs.size() + outputNeuronIDs.size());
+		inputOutputNeuronIDs.insert(inputOutputNeuronIDs.end(), inputNeuronIDs.begin(), inputNeuronIDs.end());
+		inputOutputNeuronIDs.insert(inputOutputNeuronIDs.end(), outputNeuronIDs.begin(), outputNeuronIDs.end());
+		for (size_t i = 0; i<network.layers.size(); ++i)
 		{
 			Layer layer = network.layers[i];
 			Layer newLayer;
 			newLayer.inputConnections.reserve(layer.inputConnections.size());
 			newLayer.neurons.reserve(layer.neurons.size());
-			
-			for (const Neuron::ID &id : inputNeuronIDs)
+
+			for (auto& neuron : layer.neurons)
 			{
-				bool idFound = false;
-				for(const Neuron* n : layer.neurons)
-					if (n->getID() == id)
-					{
-						idFound = true;
-						break;
-					}
-				if (!idFound)
+				if (std::find(inputOutputNeuronIDs.begin(), inputOutputNeuronIDs.end(), neuron->getID()) == inputOutputNeuronIDs.end())
 				{
-					newLayer.neurons.push_back(network.neurons[id]);
-					// Add connections back...
+					newLayer.neurons.push_back(neuron);
+					newLayer.inputConnections.insert(newLayer.inputConnections.end(), layer.inputConnections.begin(), layer.inputConnections.end());
 				}
+			}
+
+			network.layers[i] = newLayer;
+		}
+
+		// Shrink empty layers
+		size_t increment = 1;
+		for (size_t i = 0; i < network.layers.size(); i+=increment)
+		{
+			increment = 1;
+			if (network.layers[i].neurons.size() == 0)
+			{
+				network.layers.erase(network.layers.begin() + i);
+				increment = 0;
 			}
 		}
 
-		Layer lastLayer = network.layers[network.layers.size() - 1];
+		// Add input and output layers
+		Layer inputLayer;
+		Layer outputLayer;
+		for (const Neuron::ID& id : inputNeuronIDs)
+		{
+			inputLayer.neurons.push_back(network.neurons[id]);
+			for (auto& conn : network.connections)
+			{
+				if (conn->getEndNeuron() == network.neurons[id])
+				{
+					inputLayer.inputConnections.push_back(conn);
+				}
+			}
+		}
+		for (const Neuron::ID& id : outputNeuronIDs)
+		{
+			outputLayer.neurons.push_back(network.neurons[id]);
+			for (auto& conn : network.connections)
+			{
+				if (conn->getEndNeuron() == network.neurons[id])
+				{
+					outputLayer.inputConnections.push_back(conn);
+				}
+			}
+		}
+		network.layers.insert(network.layers.begin(), inputLayer);
+		network.layers.push_back(outputLayer);
+
+		/*Layer lastLayer = network.layers[network.layers.size() - 1];
 		if (lastLayer.neurons.size() != outputNeuronIDs.size())
 		{
 			Layer newSecondlastLayer;
@@ -165,7 +204,7 @@ namespace NeuralNet
 			network.layers.pop_back();
 			network.layers.push_back(newSecondlastLayer);
 			network.layers.push_back(newOutputLayer);
-		}
+		}*/
 	
 		sortLayers(network);
 

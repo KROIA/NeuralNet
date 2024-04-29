@@ -16,7 +16,7 @@ namespace NeuralNet
 	{
 		friend Visualisation::NeuronPainter;
 	public:
-		using ID = unsigned int;
+		typedef unsigned int ID;
 		Neuron(ID id);
 		Neuron(ID id, Activation::Type &activationType);
 		Neuron(const Neuron &neuron);

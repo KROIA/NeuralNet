@@ -156,6 +156,15 @@ namespace NeuralNet
 			success = false;
 			return 0;
 		}
+		void CustomConnectedNeuralNetPainter::setNeuronPosition(Neuron::ID id, const sf::Vector2f& position)
+		{
+			auto it = m_neuronPainters.find(id);
+			if (it != m_neuronPainters.end())
+			{
+				it->second.position = position;
+				it->second.painter->setPosition(position);
+			}
+		}
 
 		void CustomConnectedNeuralNetPainter::moveLayer(unsigned int layer, const sf::Vector2f& offset)
 		{
@@ -171,6 +180,75 @@ namespace NeuralNet
 				}
 			}
 		}
+		void CustomConnectedNeuralNetPainter::moveNeuron(Neuron::ID id, const sf::Vector2f& offset)
+		{
+			auto it = m_neuronPainters.find(id);
+			if (it != m_neuronPainters.end())
+			{
+				it->second.position += offset;
+				it->second.painter->move(offset);
+			}
+		}
+
+
+		void CustomConnectedNeuralNetPainter::enableNeuronGraph(Neuron::ID id, bool enable)
+		{
+			auto it = m_neuronPainters.find(id);
+			if (it != m_neuronPainters.end())
+			{
+				it->second.painter->enableGraph(enable);
+			}
+		}
+		void CustomConnectedNeuralNetPainter::enableNeuronGraph(bool enable)
+		{
+			for (auto& pair : m_neuronPainters)
+			{
+				pair.second.painter->enableGraph(enable);
+			}
+		}
+		void CustomConnectedNeuralNetPainter::enableNeuronGraphOfLayer(unsigned int layer, bool enable)
+		{
+			NetworkData& networkData = m_neuralNet->m_networkData;
+			if (layer < networkData.layers.size())
+			{
+				Layer& layerData = networkData.layers[layer];
+				for (auto& neuron : layerData.neurons)
+				{
+					NeuronPainterData& data = m_neuronPainters[neuron->getID()];
+					data.painter->enableGraph(enable);
+				}
+			}
+		}
+
+		void CustomConnectedNeuralNetPainter::enableNeuronText(Neuron::ID id, bool enable)
+		{
+			auto it = m_neuronPainters.find(id);
+			if (it != m_neuronPainters.end())
+			{
+				it->second.painter->enableText(enable);
+			}
+		}
+		void CustomConnectedNeuralNetPainter::enableNeuronText(bool enable)
+		{
+			for (auto& pair : m_neuronPainters)
+			{
+				pair.second.painter->enableText(enable);
+			}
+		}
+		void CustomConnectedNeuralNetPainter::enableNeuronTextOfLayer(unsigned int layer, bool enable)
+		{
+			NetworkData& networkData = m_neuralNet->m_networkData;
+			if (layer < networkData.layers.size())
+			{
+				Layer& layerData = networkData.layers[layer];
+				for (auto& neuron : layerData.neurons)
+				{
+					NeuronPainterData& data = m_neuronPainters[neuron->getID()];
+					data.painter->enableText(enable);
+				}
+			}
+		}
+
 
 		void CustomConnectedNeuralNetPainter::drawComponent(
 			sf::RenderTarget& target,

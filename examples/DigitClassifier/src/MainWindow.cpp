@@ -83,6 +83,8 @@ void MainWindow::setupCanvas()
     m_netObject1->setPosition(sf::Vector2f(0, 0));
    // m_netObject1->setNeuronRadius(1);
     m_netObject1->resetPositions();
+    m_netObject1->enableNeuronGraphOfLayer(m_netObject1->getInputLayerIndex(), false);
+    m_netObject1->enableNeuronTextOfLayer(m_netObject1->getInputLayerIndex(), false);
 
     // Set neuron positions
     sf::Vector2u dim = m_dataset.getDimensions();

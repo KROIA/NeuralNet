@@ -89,7 +89,7 @@ bool Dataset::load(const std::string& path)
 
 std::vector<float> Dataset::loadImage(const std::string& path)
 {
-    std::vector<float> image;
+    std::vector<float> image(m_dimensions.x * m_dimensions.y, 0);
 
     // Load image from path
     sf::Image inputImage;
@@ -100,14 +100,13 @@ std::vector<float> Dataset::loadImage(const std::string& path)
 
 	// Resize image to 28x28
 	sf::Vector2u orgSize = inputImage.getSize();
-	image.reserve(m_dimensions.x * m_dimensions.y);
 	for (unsigned int x = 0; x < m_dimensions.x; x++)
 	{
 		for (unsigned int y = 0; y < m_dimensions.y; y++)
 		{
 			sf::Color color = inputImage.getPixel(x * orgSize.x / m_dimensions.x, y * orgSize.y / m_dimensions.y);
 			int gray = ((int)color.r + (int)color.g + (int)color.b + (int)color.a);
-			image.push_back((float)gray / 255.0f);
+			image[x * m_dimensions.y + y] = ((float)gray / 255.0f);
 		}
 	}
     //return image;
