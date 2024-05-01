@@ -201,12 +201,12 @@ void MainWindow::onTimerFinish()
     TrainingSample& trainSample = m_trainingData[currentExampleIndex];
     m_net->setInputValues(trainSample.inputs);
     m_net->update();
-    float netError1 = m_net->getNetError(trainSample.expectedOutput);
+    //float netError1 = m_net->getNetError(trainSample.expectedOutput);
     m_net->learn(trainSample.expectedOutput);
 
     m_customNet->setInputValues(trainSample.inputs);
     m_customNet->update();
-    float netError2 = m_customNet->getNetError(trainSample.expectedOutput);
+    //float netError2 = m_customNet->getNetError(trainSample.expectedOutput);
     m_customNet->learn(trainSample.expectedOutput);
 
    // std::cout << netError1 << "\t" << netError2 << "\n";

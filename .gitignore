@@ -41,6 +41,8 @@ doxygen
 out
 include
 lib
+dataset
+installation
 LICENSE.APACHE
 
 LICENSE.MIT

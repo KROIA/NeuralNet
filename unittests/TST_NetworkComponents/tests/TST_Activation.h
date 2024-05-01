@@ -64,7 +64,7 @@ private:
 				case NeuralNet::Activation::Type::linear:		output = input;		derivative = 1;  break;
 				case NeuralNet::Activation::Type::finiteLinear:	output = (input < -1.f ? -1.f : (input > 1.f ? 1.f : input));	derivative = (input < -1.f ? 0.f : (input > 1.f ? 0.f : 1.f));	break;
 					case NeuralNet::Activation::Type::relu:			output = (input>0.f?input:0.f);		derivative = (input > 0.f ? 1 : 0.f);	break;
-					case NeuralNet::Activation::Type::binary:		output = (input>0?1.f:0.f);		derivative = (input == 0? 1:0); break;
+					case NeuralNet::Activation::Type::binary:		output = (input>0.f?1.f:0.f);		derivative = (input == 0.f? 1.f:0.f); break;
 					case NeuralNet::Activation::Type::sigmoid:	
 					{
 						output = 1.f / (1.f + exp(-input));

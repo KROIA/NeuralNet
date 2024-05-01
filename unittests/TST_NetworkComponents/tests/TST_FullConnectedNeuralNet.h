@@ -45,11 +45,11 @@ private:
 	{
 		TEST_START;
 
-		unsigned int inputSize = 2;
-		unsigned int outputSize = 1;
+		std::vector < NeuralNet::Neuron::ID> inputIds = { 0, 1 };
+		std::vector < NeuralNet::Neuron::ID> outputIds = { 3 };
 		unsigned int hiddenLayerCount = 1;
 		unsigned int hiddenLayerSize = 1;
-		NeuralNet::FullConnectedNeuralNet net(inputSize, hiddenLayerCount, hiddenLayerSize, outputSize);
+		NeuralNet::FullConnectedNeuralNet net(inputIds, hiddenLayerCount, hiddenLayerSize, outputIds);
 		net.setActivationType(NeuralNet::Activation::Type::linear);
 		std::vector<float> weights = net.getWeights();
 		for (size_t i = 0; i < weights.size(); i++)
@@ -58,14 +58,14 @@ private:
 		}
 		net.setWeights(weights);
 		
-		TEST_ASSERT(compare(net.getOutputValues(), std::vector<float>(outputSize, 0)));
-		net.setInputValues(std::vector<float>(inputSize, 1));
-		TEST_ASSERT(compare(net.getOutputValues(), std::vector<float>(outputSize, 0)));
+		TEST_ASSERT(compare(net.getOutputValues(), std::vector<float>(inputIds.size(), 0)));
+		net.setInputValues(std::vector<float>(inputIds.size(), 1));
+		TEST_ASSERT(compare(net.getOutputValues(), std::vector<float>(outputIds.size(), 0)));
 		net.update();
 		std::vector<float> outputs = net.getOutputValues();
-		TEST_ASSERT(compare(outputs, std::vector<float>(outputSize, 2.f)));
+		TEST_ASSERT(compare(outputs, std::vector<float>(outputIds.size(), 2.f)));
 		net.setInputValues({0.f, 1.f});
 		net.update();
-		TEST_ASSERT(compare(net.getOutputValues(), std::vector<float>(outputSize, 1.f)));
+		TEST_ASSERT(compare(net.getOutputValues(), std::vector<float>(outputIds.size(), 1.f)));
 	}
 };

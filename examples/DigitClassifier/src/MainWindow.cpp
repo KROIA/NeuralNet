@@ -47,8 +47,8 @@ void MainWindow::setupCanvas()
     qDebug() << defaultEditor->toString().c_str();
 
 
-    m_dataset.load("dataset/train");
-    m_validationSet.load("dataset/validation");
+    m_dataset.load("../dataset/train");
+    m_validationSet.load("../dataset/validation");
 
 
     unsigned int inps = 2;
@@ -178,7 +178,7 @@ void MainWindow::train(size_t iterations)
         for(size_t j=0; j<dataPoint.labels.size(); ++j)
             if (dataPoint.labels[j] > 0.9)
             {
-                digitErrors[j] = digitErrors[j] * 0.99 + netError * 0.01;
+                digitErrors[j] = digitErrors[j] * 0.99f + netError * 0.01f;
                 break;
             }
         
