@@ -104,10 +104,10 @@ if(EASY_PROFILER_IS_AVAILABLE)
     add_library(${LIBRARY_NAME_STATIC_PROFILE}                  STATIC      ${SOURCES})
 endif()
  
-target_compile_definitions(${LIBRARY_NAME_SHARED}           PUBLIC     ${DEFINES_FOR_SHARED_LIB})
-target_compile_definitions(${LIBRARY_NAME_STATIC}           PUBLIC     ${DEFINES_FOR_STATIC_LIB})
+target_compile_definitions(${LIBRARY_NAME_SHARED}           PRIVATE     ${DEFINES_FOR_SHARED_LIB})
+target_compile_definitions(${LIBRARY_NAME_STATIC}           PRIVATE     ${DEFINES_FOR_STATIC_LIB})
 if(EASY_PROFILER_IS_AVAILABLE)
-    target_compile_definitions(${LIBRARY_NAME_STATIC_PROFILE}   PUBLIC     ${DEFINES_FOR_STATIC_PROFILE_LIB})
+    target_compile_definitions(${LIBRARY_NAME_STATIC_PROFILE}   PRIVATE     ${DEFINES_FOR_STATIC_PROFILE_LIB})
 endif()
 
 set_target_properties(${LIBRARY_NAME_SHARED}                PROPERTIES  LINKER_LANGUAGE CXX  OUTPUT_NAME "${LIBRARY_NAME}"                                              DEBUG_POSTFIX ${DEBUG_POSTFIX_STR})
