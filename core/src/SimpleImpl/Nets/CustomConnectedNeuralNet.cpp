@@ -253,9 +253,25 @@ namespace NeuralNet
 				neuron->update();
 			}
 		}
+		m_softMaxSum = 0;
 		for (unsigned int i = 0; i < outputLayer.neurons.size(); ++i)
 		{
-			m_outputValues[i] = outputLayer.neurons[i]->getOutput();
+			if (m_enableSoftMax)
+			{
+				m_outputValues[i] = std::exp(outputLayer.neurons[i]->getOutput());
+				m_softMaxSum += m_outputValues[i];
+			}
+			else
+			{
+				m_outputValues[i] = outputLayer.neurons[i]->getOutput();
+			}
+		}
+		if (m_enableSoftMax && m_softMaxSum > 0)
+		{
+			for (unsigned int i = 0; i < outputLayer.neurons.size(); ++i)
+			{
+				m_outputValues[i] /= m_softMaxSum;
+			}
 		}
 	}
 

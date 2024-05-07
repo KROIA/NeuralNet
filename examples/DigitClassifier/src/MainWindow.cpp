@@ -11,6 +11,10 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
+	m_net = nullptr;
+	m_customNet = nullptr;
+    m_netObject1 = nullptr;
+    m_netObject2 = nullptr;
     ui->setupUi(this);
     m_canvas = nullptr;
     setupCanvas();
@@ -70,8 +74,9 @@ void MainWindow::setupCanvas()
         outputIDs[i] = inputIDs.size()+i;
     
     
-    m_net = new NeuralNet::FullConnectedNeuralNet(inputIDs, layerCount, 6, outputIDs);
+    m_net = new NeuralNet::FullConnectedNeuralNet(inputIDs, layerCount, 10, outputIDs);
 
+    m_net->enableSoftMaxOutput(true);
     m_net->setActivationType(NeuralNet::Activation::Type::tanh_);
     m_net->setLayerActivationType(layerCount+1, NeuralNet::Activation::Type::tanh_);
     //m_net->setLayerActivationType(2, NeuralNet::Activation::Type::tanh_);

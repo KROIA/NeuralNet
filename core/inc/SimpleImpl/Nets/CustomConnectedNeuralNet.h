@@ -48,6 +48,14 @@ namespace NeuralNet
 		{
 			m_biasList.clear();
 		}
+		void enableSoftMaxOutput(bool enable)
+		{
+			m_enableSoftMax = enable;
+		}
+		bool isSoftMaxOutputEnabled() const
+		{
+			return m_enableSoftMax;
+		}
 
 		void buildNetwork();
 		void destroyNetwork();
@@ -124,6 +132,8 @@ namespace NeuralNet
 		//bool m_networkBuilt = false;
 		std::vector<float> m_inputValues;
 		std::vector<float> m_outputValues;
+		bool m_enableSoftMax = false;
+		float m_softMaxSum = 0;
 
 		std::vector<Visualisation::CustomConnectedNeuralNetPainter*> m_painters;
 		
