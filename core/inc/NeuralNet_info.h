@@ -4,7 +4,9 @@
 
 /// USER_SECTION_END
 
-#include "NeuralNet_base.h"
+#include "NeuralNet_global.h"
+#include "NeuralNet_debug.h"
+
 #include <sstream>
 
 #define STRINGIFY(x) #x
