@@ -62,6 +62,8 @@ namespace NeuralNet
 
 		void setInputValues(const std::vector<float>& values) override;
 		void setInputValue(unsigned int index, float values) override;
+		std::vector<float> getInputValues() const override;
+		float getInputValue(unsigned int index) const override;
 		std::vector<float> getOutputValues() const override;
 		float getOutputValue(unsigned int index) const override;
 

@@ -144,7 +144,7 @@ void MainWindow::on_testNext_pushButton_clicked()
 }
 void MainWindow::on_reset_pushButton_clicked()
 {
-    auto& w = m_net->getWeights();
+    auto w = m_net->getWeights();
     for (size_t i = 0; i < w.size(); ++i)
     {
         w[i] = (float)(rand() % 2000) / 1000 - 1.0f;

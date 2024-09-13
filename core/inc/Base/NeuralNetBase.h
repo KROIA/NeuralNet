@@ -29,6 +29,8 @@ namespace NeuralNet
 
 		virtual void setInputValues(const std::vector<float>& values) = 0;
 		virtual void setInputValue(unsigned int index, float values) = 0;
+		virtual std::vector<float> getInputValues() const = 0;
+		virtual float getInputValue(unsigned int index) const = 0;
 		virtual std::vector<float> getOutputValues() const = 0;
 		virtual float getOutputValue(unsigned int index) const = 0;
 		

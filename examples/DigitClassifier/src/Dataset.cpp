@@ -3,6 +3,8 @@
 #include <QDir>
 #include <iostream>
 #include <thread>
+#include <algorithm>
+#include <random>
 
 Dataset::Dataset()
 {
@@ -83,7 +85,7 @@ bool Dataset::load(const std::string& path)
 	}
 
 	// shuffle data
-	std::random_shuffle(m_data.begin(), m_data.end());
+	std::shuffle(m_data.begin(), m_data.end(), std::mt19937(std::random_device()()));
 	return true;
 }
 

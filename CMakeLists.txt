@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.20)
 
 
 ## INFO
-## Template version: 1.2.0
+## Template version: 1.2.1
 ##
 ## This is a template for a CMake project.
 ## It is designed to be used with the Visual Studio
@@ -91,7 +91,7 @@ set_if_not_defined(COMPILE_UNITTESTS ON)					# <AUTO_REPLACED>
 ## USER_SECTION_END
 
 set_if_not_defined(QT_INSTALL_BASE "C:/Qt")
-set_if_not_defined(QT_MAJOR_VERSION 5)
+set_if_not_defined(QT_MAJOR_VERSION 6)
 set_if_not_defined(QT_VERSION "autoFind")
 set_if_not_defined(QT_COMPILER "autoFind")
 

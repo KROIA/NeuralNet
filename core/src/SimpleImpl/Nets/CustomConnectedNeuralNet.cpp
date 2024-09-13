@@ -12,6 +12,7 @@ namespace NeuralNet
 		, m_inputNeuronIDs(inputNeuronIDs)
 		, m_outputNeuronIDs(outputNeuronIDs)
 	{
+		m_inputValues = std::vector<float>(inputNeuronIDs.size(), 0);
 		m_outputValues = std::vector<float>(outputNeuronIDs.size(), 0);
 	}
 
@@ -116,6 +117,16 @@ namespace NeuralNet
 			if(isnan(m_inputValues[i]) || isinf(m_inputValues[i]))
 				m_inputValues[i] = 0.0f;
 		}
+	}
+	std::vector<float> CustomConnectedNeuralNet::getInputValues() const
+	{
+		return m_inputValues;
+	}
+	float CustomConnectedNeuralNet::getInputValue(unsigned int index) const
+	{
+		if(index < m_inputValues.size())
+			return m_inputValues[index];
+		return 0.0f;
 	}
 	void CustomConnectedNeuralNet::setInputValue(unsigned int index, float values)
 	{

@@ -15,7 +15,7 @@ public:
 	TST_FullConnectedNeuralNet()
 		: Test("TST_FullConnectedNeuralNet")
 	{
-		ADD_TEST(TST_FullConnectedNeuralNet::smalNet);
+		ADD_TEST(TST_FullConnectedNeuralNet::smallNet);
 
 	}
 
@@ -41,7 +41,7 @@ private:
 	}
 
 	// Tests
-	TEST_FUNCTION(smalNet)
+	TEST_FUNCTION(smallNet)
 	{
 		TEST_START;
 
@@ -58,7 +58,7 @@ private:
 		}
 		net.setWeights(weights);
 		
-		TEST_ASSERT(compare(net.getOutputValues(), std::vector<float>(inputIds.size(), 0)));
+		TEST_ASSERT(compare(net.getInputValues(), std::vector<float>(inputIds.size(), 0)));
 		net.setInputValues(std::vector<float>(inputIds.size(), 1));
 		TEST_ASSERT(compare(net.getOutputValues(), std::vector<float>(outputIds.size(), 0)));
 		net.update();
