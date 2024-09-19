@@ -1,8 +1,12 @@
 #pragma once
 #include "NeuralNet_global.h"
 
+/// USER_SECTION_START 14
+
+/// USER_SECTION_END
+
 // The Logger library is automaticly included if the logger dependency .cmake file is available
-#if defined(LOGGER) and not defined(LOGGER_LIB)
+#if defined(LOGGER)
 	#include "Logger.h"
 #endif
 
@@ -107,7 +111,7 @@ namespace NeuralNet
 /// USER_SECTION_END
 
 
-#if defined(LOGGER) and not defined(LOGGER_LIB)
+#if defined(LOGGER)
 	class NEURAL_NET_EXPORT Logger 
 	{
 		/// USER_SECTION_START 8
@@ -161,6 +165,9 @@ namespace NeuralNet
 
 /// USER_SECTION_END
 #endif
+/// USER_SECTION_START 13
+
+/// USER_SECTION_END
 }
 
 
