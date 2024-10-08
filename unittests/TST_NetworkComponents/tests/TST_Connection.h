@@ -20,10 +20,10 @@ public:
 	}
 
 private:
-	float m_tollerance = 0.0001f;
+	float m_tolerance = 0.0001f;
 	bool compare(float a, float b)
 	{
-		return abs(a - b) < m_tollerance;
+		return abs(a - b) < m_tolerance;
 	}
 
 	// Tests
