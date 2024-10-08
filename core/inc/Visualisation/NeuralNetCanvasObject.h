@@ -10,7 +10,7 @@
 
 namespace NeuralNet
 {
-	class NEURAL_NET_EXPORT NeuralNetCanvasObject: public QObject, public QSFML::Objects::CanvasObject
+	class NEURAL_NET_EXPORT NeuralNetCanvasObject: public QObject, public QSFML::Objects::GameObject
 	{
 		Q_OBJECT
 	public:
@@ -18,7 +18,7 @@ namespace NeuralNet
 
 		NeuralNetCanvasObject(CustomConnectedNeuralNet *net,
 							  const std::string& name = "NeuralNetCanvasObject",
-							  CanvasObject* parent = nullptr);
+							  GameObject* parent = nullptr);
 		NeuralNetCanvasObject(const NeuralNetCanvasObject& other);
 		~NeuralNetCanvasObject();
 

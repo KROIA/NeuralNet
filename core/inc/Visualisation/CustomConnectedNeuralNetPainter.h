@@ -59,12 +59,12 @@ namespace NeuralNet
 			void enableNeuronText(bool enable);
 			void enableNeuronTextOfLayer(unsigned int layer, bool enable);
 		private:
-			void setCanvasParent(QSFML::Canvas* parent) override
+			void setSceneParent(QSFML::Scene* parent) override
 			{
-				Drawable::setCanvasParent(parent);
+				Drawable::setSceneParent(parent);
 				for (auto& pair : m_neuronPainters)
 				{
-					pair.second.painter->setCanvasParent(parent);
+					pair.second.painter->setSceneParent(parent);
 				}
 			}
 			void drawComponent(sf::RenderTarget& target, sf::RenderStates states) const override;

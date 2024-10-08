@@ -16,7 +16,7 @@ MainWindow::MainWindow(QWidget *parent)
     m_netObject1 = nullptr;
     m_netObject2 = nullptr;
     ui->setupUi(this);
-    m_canvas = nullptr;
+    m_scene = nullptr;
     setupCanvas();
 
     connect(&m_timer, &QTimer::timeout, this, &MainWindow::onTimerFinish);
@@ -29,12 +29,12 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
-    delete m_canvas;
+    delete m_scene;
 }
 
 void MainWindow::setupCanvas()
 {
-    CanvasSettings settings;
+    SceneSettings settings;
     //settings.layout.autoAjustSize = false;
     settings.layout.fixedSize = sf::Vector2u(300, 100);
     settings.contextSettings.antialiasingLevel = 8;
@@ -43,11 +43,11 @@ void MainWindow::setupCanvas()
     //settings.updateControlls.enablePaintLoop = false;
     //settings.updateControlls.enableEventLoop = false;
     //settings.updateControlls.enableUpdateLoop = false;
-    m_canvas = new Canvas(ui->canvasWidget, settings);
+    m_scene = new Scene(ui->canvasWidget, settings);
 
     DefaultEditor* defaultEditor = new DefaultEditor("Grid", sf::Vector2f(1600, 16000));
     defaultEditor->getCamera()->setMinZoom(0.05);
-    m_canvas->addObject(defaultEditor);
+    m_scene->addObject(defaultEditor);
     qDebug() << defaultEditor->toString().c_str();
 
 
@@ -109,15 +109,16 @@ void MainWindow::setupCanvas()
         m_netObject1->resetLayerPosition(i+1, sf::Vector2f(spacing.x* dim.x+50 + i* layerSpacing, 0), sf::Vector2f(0, 30));
     }
     
-    m_canvas->addObject(m_netObject1);
-    m_canvas->applyObjectChanges();
+    m_scene->addObject(m_netObject1);
+    m_scene->applyObjectChanges();
+    m_scene->start();
 
-    std::cout << "Objects: \n" << m_canvas->getObjectsTreeString() << "\n";
+    std::cout << "Objects: \n" << m_scene->getObjectsTreeString() << "\n";
 }
 void MainWindow::closeEvent(QCloseEvent* event)
 {
-    if (m_canvas)
-        m_canvas->stop();
+    if (m_scene)
+        m_scene->stop();
     event->accept();
 }
 

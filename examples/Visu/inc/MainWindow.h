@@ -25,7 +25,7 @@ private:
 
     Ui::MainWindow* ui;
 
-    QSFML::Canvas* m_canvas;
+    QSFML::Scene* m_scene;
 
     //NeuralNet::Visualisation::VisuFullConnectedNeuronalNet* m_visuNet;
     NeuralNet::FullConnectedNeuralNet* m_net;

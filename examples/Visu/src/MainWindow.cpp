@@ -12,7 +12,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    m_canvas = nullptr;
+    m_scene = nullptr;
     setupCanvas();
     
     
@@ -30,12 +30,12 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
-    delete m_canvas;
+    delete m_scene;
 }
 
 void MainWindow::setupCanvas()
 {
-    CanvasSettings settings;
+    SceneSettings settings;
     //settings.layout.autoAjustSize = false;
     settings.layout.fixedSize = sf::Vector2u(300, 100);
     settings.contextSettings.antialiasingLevel = 8;
@@ -44,11 +44,11 @@ void MainWindow::setupCanvas()
     //settings.updateControlls.enablePaintLoop = false;
     //settings.updateControlls.enableEventLoop = false;
     //settings.updateControlls.enableUpdateLoop = false;
-    m_canvas = new Canvas(ui->canvasWidget, settings);
+    m_scene = new Scene(ui->canvasWidget, settings);
 
     DefaultEditor* defaultEditor = new DefaultEditor();
     defaultEditor->getCamera()->setMinZoom(0.01);
-    m_canvas->addObject(defaultEditor);
+    m_scene->addObject(defaultEditor);
     qDebug() << defaultEditor->toString().c_str();
 
 
@@ -67,7 +67,7 @@ void MainWindow::setupCanvas()
         outputIDs[i] = inputIDs.size() + i;
 
     m_net = new NeuralNet::FullConnectedNeuralNet(inputIDs, 1, 2, outputIDs);
-    //QSFML::Objects::CanvasObject* customVisuNet1 = new QSFML::Objects::CanvasObject("CustomConnectedNeuralNet");
+    //QSFML::Objects::GameObject* customVisuNet1 = new QSFML::Objects::GameObject("CustomConnectedNeuralNet");
     //customVisuNet1->setPosition(sf::Vector2f(50, 50));
     //NeuralNet::Visualisation::CustomConnectedNeuralNetPainter* visu1  = m_net->createVisualisation();
     //customVisuNet1->addComponent(visu1);
@@ -80,11 +80,11 @@ void MainWindow::setupCanvas()
     m_net->setWeights(weights);*/
     m_net->setActivationType(NeuralNet::Activation::Type::sigmoid);
     m_net->setActivationType(outputIDs[0], NeuralNet::Activation::Type::gaussian);
-    //m_canvas->addObject(customVisuNet1);
+    //m_scene->addObject(customVisuNet1);
 
     m_netObject1 = new NeuralNet::NeuralNetCanvasObject(m_net, "NeuralNetCanvasObject1");
     m_netObject1->setPosition(sf::Vector2f(50, 50));
-    m_canvas->addObject(m_netObject1);
+    m_scene->addObject(m_netObject1);
 
 
     
@@ -129,22 +129,23 @@ void MainWindow::setupCanvas()
 //    m_customNet->setInputValues({ -1, 0.5, 1 });
 //    m_customNet->update();
 
-   //QSFML::Objects::CanvasObject* customVisuNet = new QSFML::Objects::CanvasObject("CustomConnectedNeuralNet");
+   //QSFML::Objects::GameObject* customVisuNet = new QSFML::Objects::GameObject("CustomConnectedNeuralNet");
    //customVisuNet->setPosition(sf::Vector2f(50, 300));
    //NeuralNet::Visualisation::CustomConnectedNeuralNetPainter* customPainter = m_customNet->createVisualisation();
    //customVisuNet->addComponent((QSFML::Components::Component*)customPainter);
-   //m_canvas->addObject(customVisuNet);
+   //m_scene->addObject(customVisuNet);
 
 
     m_netObject2 = new NeuralNet::NeuralNetCanvasObject(m_customNet, "NeuralNetCanvasObject2");
     m_netObject2->setPosition(sf::Vector2f(50, 300));
-    m_canvas->addObject(m_netObject2);
+    m_scene->addObject(m_netObject2);
+    m_scene->start();
 
 }
 void MainWindow::closeEvent(QCloseEvent* event)
 {
-    if (m_canvas)
-        m_canvas->stop();
+    if (m_scene)
+        m_scene->stop();
     event->accept();
 }
 
