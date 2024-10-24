@@ -22,7 +22,7 @@ namespace NeuralNet
 		m_painters.clear();
 		for (auto painter : painters)
 		{
-			painter->deleteThis();
+			QSFML::Internal::LifetimeChecker::deleteSecured(painter);
 		}
 		destroyNetwork();
 	}

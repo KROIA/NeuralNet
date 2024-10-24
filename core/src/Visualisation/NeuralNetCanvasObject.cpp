@@ -12,14 +12,14 @@ namespace NeuralNet
 	NeuralNetCanvasObject::NeuralNetCanvasObject(
 		CustomConnectedNeuralNet* net,
 		const std::string& name,
-		CanvasObject* parent)
-		: CanvasObject(name, parent)
+		GameObject* parent)
+		: GameObject(name, parent)
 		, m_neuralNet(net)
 	{
 		setup();
 	}
 	NeuralNetCanvasObject::NeuralNetCanvasObject(const NeuralNetCanvasObject& other)
-		: CanvasObject(other)
+		: GameObject(other)
 		, m_neuralNet(other.m_neuralNet)
 	{
 		setup();
