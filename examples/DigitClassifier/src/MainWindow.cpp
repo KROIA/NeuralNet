@@ -80,8 +80,9 @@ void MainWindow::setupCanvas()
     m_net->setActivationType(NeuralNet::Activation::Type::tanh_);
     m_net->setLayerActivationType(layerCount+1, NeuralNet::Activation::Type::tanh_);
     //m_net->setLayerActivationType(2, NeuralNet::Activation::Type::tanh_);
-    m_net->setLearningRate(0.1);
+    //m_net->setLearningRate(0.1);
     //m_net->enableNormalizedNetInput(true);
+	NeuralNet::LearnAlgo::Backpropagation::setLearningRate(0.1);
 
     m_netObject1 = new NeuralNet::NeuralNetCanvasObject(m_net, "NeuralNetCanvasObject1");
     m_netObject1->setLayerSpacing(300);
@@ -178,8 +179,9 @@ void MainWindow::train(size_t iterations)
         const Dataset::DataPoint& dataPoint = dataset[rand() % dataset.size()];
 		m_net->setInputValues(dataPoint.features);
 		m_net->update();
-		m_net->learn(dataPoint.labels);
-        float netError = m_net->getNetError(dataPoint.labels);
+		//m_net->learn(dataPoint.labels);
+		NeuralNet::LearnAlgo::Backpropagation::learn(*m_net, dataPoint.labels);
+        float netError = NeuralNet::LearnAlgo::Backpropagation::getNetError(*m_net, dataPoint.labels);
         error += netError;
         for(size_t j=0; j<dataPoint.labels.size(); ++j)
             if (dataPoint.labels[j] > 0.9)
@@ -238,5 +240,6 @@ float MainWindow::test(const Dataset::DataPoint& dataPoint)
 {
     m_net->setInputValues(dataPoint.features);
     m_net->update();
-    return m_net->getNetError(dataPoint.labels);
+    
+    return NeuralNet::LearnAlgo::Backpropagation::getNetError(*m_net, dataPoint.labels);
 }

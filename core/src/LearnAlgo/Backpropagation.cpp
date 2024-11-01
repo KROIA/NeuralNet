@@ -6,14 +6,6 @@ namespace NeuralNet
 	namespace LearnAlgo
 	{
 		float Backpropagation::m_learningRate = 1;
-		Backpropagation::Backpropagation()
-		{
-
-		}
-		Backpropagation::~Backpropagation()
-		{
-
-		}
 
 		void Backpropagation::learn(std::vector<Layer>& layers, const std::vector<float>& expectedOutput)
 		{

@@ -21,5 +21,6 @@
 #include "Visualisation/NeuralNetCanvasObject.h"
 
 #include "LearnAlgo/Backpropagation.h"
+#include "LearnAlgo/GeneticLearn.h"
 
 /// USER_SECTION_END

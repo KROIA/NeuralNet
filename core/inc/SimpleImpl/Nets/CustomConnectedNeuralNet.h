@@ -26,6 +26,7 @@ namespace NeuralNet
 		friend class Visualisation::CustomConnectedNeuralNetPainter;
 		friend LearnAlgo::Backpropagation;
 	public:
+		static Log::LogObject& getLogger();
 		CustomConnectedNeuralNet(
 			const std::vector<Neuron::ID>& inputNeuronIDs,
 			const std::vector<Neuron::ID>& outputNeuronIDs);
@@ -100,6 +101,10 @@ namespace NeuralNet
 		void setBias(Neuron::ID id, float bias);
 		void setBias(unsigned int layerIdx, unsigned int neuronIdx, float bias);
 		void setBias(const std::vector<float>& biasList);
+
+		size_t getGenomSize() const;
+		std::vector<float> getGenom() const;
+		void setGenom(const std::vector<float>& genom);
 
 		void enableNormalizedNetInput(bool enable);
 

@@ -5,6 +5,11 @@
 
 namespace NeuralNet
 {
+	Log::LogObject& CustomConnectedNeuralNet::getLogger()
+	{
+		static Log::LogObject logger("CustomConnectedNeuralNet");
+		return logger;
+	}
 	CustomConnectedNeuralNet::CustomConnectedNeuralNet(
 		const std::vector<Neuron::ID>& inputNeuronIDs,
 		const std::vector<Neuron::ID>& outputNeuronIDs)
@@ -383,21 +388,30 @@ namespace NeuralNet
 		m_biasList[id] = bias;
 		Neuron* n = getNeuron(id);
 		if (!n)
+		{
+			getLogger().logError("setBias(...): Invalid neuron id");
 			return;
+		}
 		n->setBias(bias);
 	}
 	void CustomConnectedNeuralNet::setBias(unsigned int layerIdx, unsigned int neuronIdx, float bias)
 	{
 		Neuron* n = getNeuron(layerIdx, neuronIdx);
 		if (!n)
+		{
+			getLogger().logError("setBias(...): Invalid layer/neuron index");
 			return;
+		}
 		n->setBias(bias);
 		m_biasList[n->getID()] = bias;
 	}
 	void CustomConnectedNeuralNet::setBias(const std::vector<float>& biasList)
 	{
 		if (biasList.size() != m_networkData.neuronCount)
+		{
+			getLogger().logError("setBias(...): Invalid bias list size");
 			return; // invalid size
+		}
 
 		size_t index = 0;
 		for (size_t i = 1; i < m_networkData.layers.size(); ++i)
@@ -410,6 +424,57 @@ namespace NeuralNet
 			}
 		}
 	}
+
+	size_t CustomConnectedNeuralNet::getGenomSize() const
+	{
+		size_t size = 0;
+		for (auto& layer : m_networkData.layers)
+		{
+			for (auto& neuron : layer.neurons)
+			{
+				size += 1 + neuron->getInputConnections().size();
+			}
+		}
+		return size;
+	}
+
+	std::vector<float> CustomConnectedNeuralNet::getGenom() const
+	{
+		std::vector<float> genom;
+		for (auto& layer : m_networkData.layers)
+		{
+			for (auto& neuron : layer.neurons)
+			{
+				genom.push_back(neuron->getBias());
+				for (auto& connection : neuron->getInputConnections())
+				{
+					genom.push_back(connection->getWeight());
+				}
+			}
+		}
+		return genom;
+	}
+	void CustomConnectedNeuralNet::setGenom(const std::vector<float>& genom)
+	{
+		if (genom.size() != getGenomSize())
+		{
+			getLogger().logError("setGenom(...): Invalid genom size");
+			return;
+		}
+		size_t index = 0;
+		for (auto& layer : m_networkData.layers)
+		{
+			for (auto& neuron : layer.neurons)
+			{
+				neuron->setBias(genom[index++]);
+				for (auto& connection : neuron->getInputConnections())
+				{
+					connection->setWeight(genom[index++]);
+				}
+			}
+		}
+	}
+
 	void CustomConnectedNeuralNet::enableNormalizedNetInput(bool enable)
 	{
 		for(auto& neuron : m_networkData.neurons)

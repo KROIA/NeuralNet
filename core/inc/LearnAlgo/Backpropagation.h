@@ -12,10 +12,10 @@ namespace NeuralNet
 	{
 		class NEURAL_NET_EXPORT Backpropagation
 		{
+			Backpropagation() {}
 		public:
 
-			Backpropagation();
-			~Backpropagation();
+			
 
 			static void setLearningRate(float learningRate){ m_learningRate = learningRate;}
 			static float getLearningRate() { return m_learningRate; }
