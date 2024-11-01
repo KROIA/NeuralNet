@@ -171,8 +171,8 @@ void MainWindow::train(size_t iterations)
     const bool checkUnchangedNeurons = true;
 
     static std::vector<float> digitErrors;
-    if (digitErrors.size() != m_net->getOutputCount())
-        digitErrors = std::vector<float>(m_net->getOutputCount(), 0);
+    if (digitErrors.size() != m_net->getOutputSize())
+        digitErrors = std::vector<float>(m_net->getOutputSize(), 0);
     for (size_t i = 0; i < iterations; i++)
 	{
 		//for (const Dataset::DataPoint& dataPoint : dataset)

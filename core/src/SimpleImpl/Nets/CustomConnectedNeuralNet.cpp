@@ -108,9 +108,9 @@ namespace NeuralNet
 
 	void CustomConnectedNeuralNet::setInputValues(const std::vector<float>& values)
 	{
-		if (values.size() != getInputCount())
+		if (values.size() != getInputSize())
 		{
-			size_t minSize = std::min(values.size(), (size_t)getInputCount());
+			size_t minSize = std::min(values.size(), (size_t)getInputSize());
 			std::copy(values.begin(), values.begin() + minSize, m_inputValues.begin());
 		}
 		else
@@ -421,6 +421,17 @@ namespace NeuralNet
 				neuron->setBias(biasList[index]);
 				m_biasList[neuron->getID()] = biasList[index];
 				++index;
+			}
+		}
+	}
+	void CustomConnectedNeuralNet::setBias(float biasForAll)
+	{
+		for (auto& layer : m_networkData.layers)
+		{
+			for (auto& neuron : layer.neurons)
+			{
+				neuron->setBias(biasForAll);
+				m_biasList[neuron->getID()] = biasForAll;
 			}
 		}
 	}

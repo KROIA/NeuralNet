@@ -6,7 +6,7 @@ namespace NeuralNet
 	{
 		float GeneticLearn::m_mutationRate = 0.1f;
 		int GeneticLearn::m_mutationCountPercentage = 10;
-		int GeneticLearn::m_crossoverCountPercentage = 50;
+		int GeneticLearn::m_crossoverCountPercentage = 10;
 
 		Log::LogObject& GeneticLearn::getLogger()
 		{
@@ -26,10 +26,13 @@ namespace NeuralNet
 			std::vector<GeneticPerformance>& nets,
 			std::vector<std::vector<float>>& genom)
 		{
+			std::vector<std::vector<float>> origGenom;
+			origGenom.resize(nets.size());
 			genom.resize(nets.size());
+			memset(genom.data(), 0, genom.size() * sizeof(float));
 			for (size_t i = 0; i < nets.size(); ++i)
 			{
-				genom[i] = nets[i].net->getGenom();
+				origGenom[i] = nets[i].net->getGenom();
 			}
 
 			std::vector<FitnessIndex> sortedIndices = getSortedFitnessIndices(nets);
@@ -51,9 +54,19 @@ namespace NeuralNet
 					getLogger().logWarning("learn(...): Could not find different indices for crossover");
 					//continue;
 				}
-				crossover(genom[index1], genom[index2], m_crossoverCountPercentage);
-				mutate(genom[index1], m_mutationCountPercentage);
-				mutate(genom[index2], m_mutationCountPercentage);
+				size_t otherIndex = nets.size() / 2 + i;
+				genom[i] = origGenom[index1];
+				genom[otherIndex] = origGenom[index2];
+				crossover(genom[i], genom[otherIndex], m_crossoverCountPercentage);
+				mutate(genom[i], m_mutationCountPercentage);
+				mutate(genom[otherIndex], m_mutationCountPercentage);
+			}
+
+			if (nets.size() % 2 != 0)
+			{
+				size_t index = select(sortedIndices, sumFitness);
+				genom[nets.size() - 1] = origGenom[index];
+				mutate(genom[nets.size() - 1], m_mutationCountPercentage);
 			}
 		}
 

@@ -17,6 +17,8 @@ TEST_INSTANTIATE(TST_Activation);
 TEST_INSTANTIATE(TST_Neuron);
 TEST_INSTANTIATE(TST_Connection);
 TEST_INSTANTIATE(TST_FullConnectedNeuralNet);
+TEST_INSTANTIATE(TST_BackpropagationXOR);
+TEST_INSTANTIATE(TST_GeneticLearnXOR);
 
 
 int main(int argc, char* argv[])
@@ -42,9 +44,9 @@ int main(int argc, char* argv[])
 	UnitTest::Test::printResults(results);
 
 #ifdef QT_WIDGETS_ENABLED
-	QWidget* widget = NeuralNet::LibraryInfo::createInfoWidget();
-	if (widget)
-		widget->show();
+	//QWidget* widget = NeuralNet::LibraryInfo::createInfoWidget();
+	//if (widget)
+	//	widget->show();
 #endif
 #ifdef QT_ENABLED
 	return app.exec();

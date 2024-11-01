@@ -93,10 +93,10 @@ namespace NeuralNet
 
 		/*std::vector<float> Backpropagation::getOutputError(FullConnectedNeuralNet& nn, const std::vector<float>& expectedOutput)
 		{
-			if (expectedOutput.size() != nn.getOutputCount())
+			if (expectedOutput.size() != nn.getOutputSize())
 				return std::vector<float>();
-			std::vector<float> err(nn.getOutputCount(), 0);
-			for (size_t i = 0; i < nn.getOutputCount(); ++i)
+			std::vector<float> err(nn.getOutputSize(), 0);
+			for (size_t i = 0; i < nn.getOutputSize(); ++i)
 			{
 				err[i] = getError(nn.getOutputValue(i), expectedOutput[i]);
 			}
@@ -104,10 +104,10 @@ namespace NeuralNet
 		}*/
 		std::vector<float> Backpropagation::getOutputError(CustomConnectedNeuralNet& nn, const std::vector<float>& expectedOutput)
 		{
-			if (expectedOutput.size() != nn.getOutputCount())
+			if (expectedOutput.size() != nn.getOutputSize())
 				return std::vector<float>();
-			std::vector<float> err(nn.getOutputCount(), 0);
-			for (size_t i = 0; i < nn.getOutputCount(); ++i)
+			std::vector<float> err(nn.getOutputSize(), 0);
+			for (size_t i = 0; i < nn.getOutputSize(); ++i)
 			{
 				err[i] = getError(nn.getOutputValue(i), expectedOutput[i]);
 			}
@@ -116,32 +116,32 @@ namespace NeuralNet
 
 		/*float Backpropagation::getNetError(FullConnectedNeuralNet& nn, const std::vector<float>& expectedOutput)
 		{
-			if (expectedOutput.size() != nn.getOutputCount())
+			if (expectedOutput.size() != nn.getOutputSize())
 				return 0;
 			float netError = 0;
-			for (size_t i = 0; i < nn.getOutputCount(); ++i)
+			for (size_t i = 0; i < nn.getOutputSize(); ++i)
 			{
 				float outp = nn.getOutputValue(i);
 				float expected = expectedOutput[i];
 				float diff = getError(outp, expected);
 				netError += std::abs(diff);
 			}
-			netError /= nn.getOutputCount();
+			netError /= nn.getOutputSize();
 			return netError;
 		}*/
 		float Backpropagation::getNetError(CustomConnectedNeuralNet& nn, const std::vector<float>& expectedOutput)
 		{
-			if (expectedOutput.size() != nn.getOutputCount())
+			if (expectedOutput.size() != nn.getOutputSize())
 				return 0;
 			float netError = 0;
-			for (size_t i = 0; i < nn.getOutputCount(); ++i)
+			for (size_t i = 0; i < nn.getOutputSize(); ++i)
 			{
 				float outp = nn.getOutputValue(i);
 				float expected = expectedOutput[i];
 				float diff = getError(outp, expected);
 				netError += std::abs(diff);
 			}
-			netError /= nn.getOutputCount();
+			netError /= nn.getOutputSize();
 			return netError;
 		}
 

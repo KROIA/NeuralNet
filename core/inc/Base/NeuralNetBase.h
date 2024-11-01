@@ -18,11 +18,11 @@ namespace NeuralNet
 		virtual ~NeuralNetBase()
 		{}
 
-		unsigned int getInputCount() const
+		unsigned int getInputSize() const
 		{
 			return m_inputs;
 		}
-		unsigned int getOutputCount() const
+		unsigned int getOutputSize() const
 		{
 			return m_outputs;
 		}

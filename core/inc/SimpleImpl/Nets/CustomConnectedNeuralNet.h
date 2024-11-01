@@ -101,6 +101,7 @@ namespace NeuralNet
 		void setBias(Neuron::ID id, float bias);
 		void setBias(unsigned int layerIdx, unsigned int neuronIdx, float bias);
 		void setBias(const std::vector<float>& biasList);
+		void setBias(float biasForAll);
 
 		size_t getGenomSize() const;
 		std::vector<float> getGenom() const;

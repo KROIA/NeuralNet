@@ -56,6 +56,7 @@ private:
 		{
 			weights[i] = 1.f;
 		}
+		net.setBias(0.f);
 		net.setWeights(weights);
 		
 		TEST_ASSERT(compare(net.getInputValues(), std::vector<float>(inputIds.size(), 0)));

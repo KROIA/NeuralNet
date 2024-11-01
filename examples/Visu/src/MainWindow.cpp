@@ -54,6 +54,8 @@ void MainWindow::setupCanvas()
 
     unsigned int inps = 2;
     unsigned int outps = 1;
+    unsigned int hiddenLayers = 1;
+    unsigned int hiddenLayerSize = 2;
     if (m_trainingData.size() > 0)
     {
         inps = m_trainingData[0].inputs.size();
@@ -66,7 +68,7 @@ void MainWindow::setupCanvas()
     for (size_t i = 0; i < outputIDs.size(); ++i)
         outputIDs[i] = inputIDs.size() + i;
 
-    m_net = new NeuralNet::FullConnectedNeuralNet(inputIDs, 1, 3, outputIDs);
+    m_net = new NeuralNet::FullConnectedNeuralNet(inputIDs, hiddenLayers, hiddenLayerSize, outputIDs);
     //QSFML::Objects::GameObject* customVisuNet1 = new QSFML::Objects::GameObject("CustomConnectedNeuralNet");
     //customVisuNet1->setPosition(sf::Vector2f(50, 50));
     //NeuralNet::Visualisation::CustomConnectedNeuralNetPainter* visu1  = m_net->createVisualisation();
@@ -80,7 +82,8 @@ void MainWindow::setupCanvas()
     m_net->setWeights(weights);*/
     m_net->setActivationType(NeuralNet::Activation::Type::tanh_);
     m_net->setActivationType(outputIDs[0], NeuralNet::Activation::Type::sigmoid);
-    m_net->setActivationType(m_net->getNeuron(1,2)->getID(), NeuralNet::Activation::Type::gaussian);
+    if (hiddenLayerSize >= 3)
+        m_net->setActivationType(m_net->getNeuron(1, 2)->getID(), NeuralNet::Activation::Type::gaussian);
     //m_scene->addObject(customVisuNet1);
 
     m_netObject1 = new NeuralNet::NeuralNetCanvasObject(m_net, "NeuralNetCanvasObject1");

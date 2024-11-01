@@ -15,15 +15,15 @@ public:
 	TST_simple()
 		: Test("TST_simple")
 	{
-		ADD_TEST(TST_simple::test1);
-		ADD_TEST(TST_simple::test2);
+		ADD_TEST(test1);
+		ADD_TEST(test2);
 
 	}
 
 private:
 
 	// Tests
-	bool test1(TestResults& results)
+	TEST_FUNCTION(test1)
 	{
 		TEST_START(results);
 
@@ -31,13 +31,13 @@ private:
 		TEST_MESSAGE("is a == 0?");
 		TEST_ASSERT(a == 0);
 
-		TEST_END;
+
 	}
 
 
 
 
-	bool test2(TestResults& results)
+	TEST_FUNCTION(test2)
 	{
 		TEST_START(results);
 
@@ -53,7 +53,7 @@ private:
 		// fails if a != b
 		TEST_COMPARE(a, b);
 
-		TEST_END;
+
 	}
 
 };
