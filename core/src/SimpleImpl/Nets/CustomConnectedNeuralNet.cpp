@@ -418,7 +418,7 @@ namespace NeuralNet
 		}
 	}
 
-
+	/*
 	void CustomConnectedNeuralNet::learn(const std::vector<float>& expectedOutput)
 	{
 		if (expectedOutput.size() != getOutputCount())
@@ -451,7 +451,7 @@ namespace NeuralNet
 		netError /= getOutputCount();
 		return netError;
 	}
-
+	*/
 	void CustomConnectedNeuralNet::removePainter(Visualisation::CustomConnectedNeuralNetPainter* painter)
 	{
 		auto it = std::find(m_painters.begin(), m_painters.end(), painter);

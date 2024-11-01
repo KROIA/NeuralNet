@@ -5,6 +5,7 @@ namespace NeuralNet
 {
 	namespace LearnAlgo
 	{
+		float Backpropagation::m_learningRate = 1;
 		Backpropagation::Backpropagation()
 		{
 
@@ -86,6 +87,70 @@ namespace NeuralNet
 				//nextLayerErrorSize = layers[layerIdx - 1].neurons.size();
 				//nextLayerError = std::vector<float>(nextLayerErrorSize, 0);
 			}
+		}
+		/*void Backpropagation::learn(FullConnectedNeuralNet& nn, const std::vector<float>& expectedOutput)
+		{
+			NN_UNUSED(nn);
+			NN_UNUSED(expectedOutput);
+			//learn(nn.getNetworkData().layers, expectedOutput);
+		}*/
+		void Backpropagation::learn(CustomConnectedNeuralNet& nn, const std::vector<float>& expectedOutput)
+		{
+			learn(nn.getNetworkData().layers, expectedOutput);
+		}
+
+		/*std::vector<float> Backpropagation::getOutputError(FullConnectedNeuralNet& nn, const std::vector<float>& expectedOutput)
+		{
+			if (expectedOutput.size() != nn.getOutputCount())
+				return std::vector<float>();
+			std::vector<float> err(nn.getOutputCount(), 0);
+			for (size_t i = 0; i < nn.getOutputCount(); ++i)
+			{
+				err[i] = getError(nn.getOutputValue(i), expectedOutput[i]);
+			}
+			return err;
+		}*/
+		std::vector<float> Backpropagation::getOutputError(CustomConnectedNeuralNet& nn, const std::vector<float>& expectedOutput)
+		{
+			if (expectedOutput.size() != nn.getOutputCount())
+				return std::vector<float>();
+			std::vector<float> err(nn.getOutputCount(), 0);
+			for (size_t i = 0; i < nn.getOutputCount(); ++i)
+			{
+				err[i] = getError(nn.getOutputValue(i), expectedOutput[i]);
+			}
+			return err;
+		}
+
+		/*float Backpropagation::getNetError(FullConnectedNeuralNet& nn, const std::vector<float>& expectedOutput)
+		{
+			if (expectedOutput.size() != nn.getOutputCount())
+				return 0;
+			float netError = 0;
+			for (size_t i = 0; i < nn.getOutputCount(); ++i)
+			{
+				float outp = nn.getOutputValue(i);
+				float expected = expectedOutput[i];
+				float diff = getError(outp, expected);
+				netError += std::abs(diff);
+			}
+			netError /= nn.getOutputCount();
+			return netError;
+		}*/
+		float Backpropagation::getNetError(CustomConnectedNeuralNet& nn, const std::vector<float>& expectedOutput)
+		{
+			if (expectedOutput.size() != nn.getOutputCount())
+				return 0;
+			float netError = 0;
+			for (size_t i = 0; i < nn.getOutputCount(); ++i)
+			{
+				float outp = nn.getOutputValue(i);
+				float expected = expectedOutput[i];
+				float diff = getError(outp, expected);
+				netError += std::abs(diff);
+			}
+			netError /= nn.getOutputCount();
+			return netError;
 		}
 
 		float Backpropagation::getError(float output, float expectedOutput)

@@ -9,7 +9,7 @@
 #include "QSFML_EditorWidget.h"
 #include <unordered_map>
 
-#include "LearnAlgo/Backpropagation.h"
+//#include "LearnAlgo/Backpropagation.h"
 
 namespace NeuralNet
 {
@@ -17,9 +17,14 @@ namespace NeuralNet
 	{
 		class CustomConnectedNeuralNetPainter;
 	}
+	namespace LearnAlgo
+	{
+		class Backpropagation;
+	}
 	class NEURAL_NET_EXPORT CustomConnectedNeuralNet : public NeuralNetBase
 	{
 		friend class Visualisation::CustomConnectedNeuralNetPainter;
+		friend LearnAlgo::Backpropagation;
 	public:
 		CustomConnectedNeuralNet(
 			const std::vector<Neuron::ID>& inputNeuronIDs,
@@ -98,10 +103,10 @@ namespace NeuralNet
 
 		void enableNormalizedNetInput(bool enable);
 
-		void setLearningRate(float learnRate){ m_backProp.setLearningRate(learnRate); }
-		void learn(const std::vector<float>& expectedOutput);
-		std::vector<float> getOutputError(const std::vector<float>& expectedOutput) const;
-		float getNetError(const std::vector<float>& expectedOutput) const;
+		//void setLearningRate(float learnRate){ m_backProp.setLearningRate(learnRate); }
+		//void learn(const std::vector<float>& expectedOutput);
+		//std::vector<float> getOutputError(const std::vector<float>& expectedOutput) const;
+		//float getNetError(const std::vector<float>& expectedOutput) const;
 
 
 		unsigned int getInputLayerIndex() const
@@ -118,6 +123,10 @@ namespace NeuralNet
 		void needsStructureUpdate()
 		{
 			m_networkStructureOutOfDate = true;
+		}
+		NetworkData& getNetworkData()
+		{
+			return m_networkData;
 		}
 		
 		bool m_networkStructureOutOfDate = true;
@@ -139,7 +148,7 @@ namespace NeuralNet
 
 		std::vector<Visualisation::CustomConnectedNeuralNetPainter*> m_painters;
 		
-		LearnAlgo::Backpropagation m_backProp;
+		//LearnAlgo::Backpropagation m_backProp;
 
 		class NEURAL_NET_EXPORT CustomConnectedNeuralNetBuilder
 		{

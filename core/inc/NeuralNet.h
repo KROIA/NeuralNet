@@ -20,6 +20,6 @@
 #include "Visualisation/CustomConnectedNeuralNetPainter.h"
 #include "Visualisation/NeuralNetCanvasObject.h"
 
-
+#include "LearnAlgo/Backpropagation.h"
 
 /// USER_SECTION_END

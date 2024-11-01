@@ -43,4 +43,5 @@ private:
     };
 
     std::vector<TrainingSample> m_trainingData;
+	int m_currentExampleIndex = 0;
 };

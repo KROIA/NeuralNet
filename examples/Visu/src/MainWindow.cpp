@@ -66,7 +66,7 @@ void MainWindow::setupCanvas()
     for (size_t i = 0; i < outputIDs.size(); ++i)
         outputIDs[i] = inputIDs.size() + i;
 
-    m_net = new NeuralNet::FullConnectedNeuralNet(inputIDs, 1, 2, outputIDs);
+    m_net = new NeuralNet::FullConnectedNeuralNet(inputIDs, 1, 3, outputIDs);
     //QSFML::Objects::GameObject* customVisuNet1 = new QSFML::Objects::GameObject("CustomConnectedNeuralNet");
     //customVisuNet1->setPosition(sf::Vector2f(50, 50));
     //NeuralNet::Visualisation::CustomConnectedNeuralNetPainter* visu1  = m_net->createVisualisation();
@@ -78,14 +78,42 @@ void MainWindow::setupCanvas()
             //(2.f *i / weights.size())-1.f;
 	}
     m_net->setWeights(weights);*/
-    m_net->setActivationType(NeuralNet::Activation::Type::sigmoid);
-    m_net->setActivationType(outputIDs[0], NeuralNet::Activation::Type::gaussian);
+    m_net->setActivationType(NeuralNet::Activation::Type::tanh_);
+    m_net->setActivationType(outputIDs[0], NeuralNet::Activation::Type::sigmoid);
+    m_net->setActivationType(m_net->getNeuron(1,2)->getID(), NeuralNet::Activation::Type::gaussian);
     //m_scene->addObject(customVisuNet1);
 
     m_netObject1 = new NeuralNet::NeuralNetCanvasObject(m_net, "NeuralNetCanvasObject1");
     m_netObject1->setPosition(sf::Vector2f(50, 50));
-    m_scene->addObject(m_netObject1);
+	m_netObject1->addDrawFunction([this](const GameObject&obj, sf::RenderTarget& target, sf::RenderStates states)
+		{
+            TrainingSample& trainSample = m_trainingData[m_currentExampleIndex];
+            static std::array<float, 10000> errors = { 0 };
+			//roll errors
+			memmove(errors.data(), errors.data() + 1, (errors.size() - 1)*sizeof(float));
 
+			float netError1 = NeuralNet::LearnAlgo::Backpropagation::getNetError(*m_net, trainSample.expectedOutput);
+			errors[errors.size() - 1] = netError1;
+
+			// Plot errors using ImPlot and auto ajust the plot size
+            ImGui::Begin("Error Plot 1");
+            ImVec2 plotDimensions = ImGui::GetContentRegionAvail();
+            if (ImPlot::BeginPlot("Error Plot", "Time", "Error", plotDimensions))
+            {
+                // Set the y-axis to automatically fit the data
+                ImPlot::SetupAxis(ImAxis_Y1, NULL, ImPlotAxisFlags_AutoFit);
+
+                //ImPlot::PlotLine("Kinetic Energy", m_kineticEnergy, plotSize);
+                //ImPlot::PlotLine("Potential Energy", m_potentialEnergy, plotSize);
+                ImPlot::PlotLine("Error", errors.data(), errors.size());
+                ImPlot::EndPlot();
+            }
+            ImGui::End();
+
+
+		});
+    m_scene->addObject(m_netObject1);
+    NeuralNet::LearnAlgo::Backpropagation::setLearningRate(1);
 
     
     m_customNet = new NeuralNet::CustomConnectedNeuralNet(inputIDs, outputIDs);
@@ -138,6 +166,33 @@ void MainWindow::setupCanvas()
 
     m_netObject2 = new NeuralNet::NeuralNetCanvasObject(m_customNet, "NeuralNetCanvasObject2");
     m_netObject2->setPosition(sf::Vector2f(50, 300));
+   /* m_netObject2->addDrawFunction([this](const GameObject& obj, sf::RenderTarget& target, sf::RenderStates states)
+        {
+            TrainingSample& trainSample = m_trainingData[m_currentExampleIndex];
+            static std::array<float, 10000> errors = { 0 };
+            //roll errors
+            memmove(errors.data(), errors.data() + 1, (errors.size() - 1) * sizeof(float));
+
+            float netError1 = NeuralNet::LearnAlgo::Backpropagation::getNetError(*m_customNet, trainSample.expectedOutput);
+            errors[errors.size() - 1] = netError1;
+
+            // Plot errors using ImPlot and auto ajust the plot size
+            ImGui::Begin("Error Plot 2");
+            ImVec2 plotDimensions = ImGui::GetContentRegionAvail();
+            if (ImPlot::BeginPlot("Error Plot", "Time", "Error", plotDimensions))
+            {
+                // Set the y-axis to automatically fit the data
+                ImPlot::SetupAxis(ImAxis_Y1, NULL, ImPlotAxisFlags_AutoFit);
+
+                //ImPlot::PlotLine("Kinetic Energy", m_kineticEnergy, plotSize);
+                //ImPlot::PlotLine("Potential Energy", m_potentialEnergy, plotSize);
+                ImPlot::PlotLine("Error", errors.data(), errors.size());
+                ImPlot::EndPlot();
+            }
+            ImGui::End();
+
+
+        });*/
     m_scene->addObject(m_netObject2);
     m_scene->start();
 
@@ -184,35 +239,27 @@ void shrinkNetwork(std::vector<NeuralNet::ConnectionInfo>& connections)
 
 void MainWindow::onTimerFinish()
 {
-    static int currentExampleIndex = 0;
-    if (currentExampleIndex >= m_trainingData.size())
+    m_currentExampleIndex++;
+    if (m_currentExampleIndex >= m_trainingData.size())
     {
-       /* std::vector<NeuralNet::ConnectionInfo> connections = m_customNet->getConnections();
-        shrinkNetwork(connections);
-        if (connections.size() == 0)
-        {
-            connections = m_customNet->getConnections();
-        }
-        m_customNet->setConnections(connections);
-        m_customNet->buildNetwork();*/
-
-        currentExampleIndex = 0;
+        m_currentExampleIndex = 0;
     }
 
-    TrainingSample& trainSample = m_trainingData[currentExampleIndex];
+    TrainingSample& trainSample = m_trainingData[m_currentExampleIndex];
     m_net->setInputValues(trainSample.inputs);
     m_net->update();
-    //float netError1 = m_net->getNetError(trainSample.expectedOutput);
-    m_net->learn(trainSample.expectedOutput);
+    float netError1 = NeuralNet::LearnAlgo::Backpropagation::getNetError(*m_net, trainSample.expectedOutput);
+    //m_net->learn(trainSample.expectedOutput);
+    NeuralNet::LearnAlgo::Backpropagation::learn(*m_net, trainSample.expectedOutput);
 
     m_customNet->setInputValues(trainSample.inputs);
     m_customNet->update();
     //float netError2 = m_customNet->getNetError(trainSample.expectedOutput);
-    m_customNet->learn(trainSample.expectedOutput);
+    //m_customNet->learn(trainSample.expectedOutput);
+    NeuralNet::LearnAlgo::Backpropagation::learn(*m_customNet, trainSample.expectedOutput);
 
-   // std::cout << netError1 << "\t" << netError2 << "\n";
+    std::cout << netError1 << "\n";
 
-    currentExampleIndex++;
     
 
     static int counter = 0; 

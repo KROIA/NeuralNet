@@ -39,7 +39,7 @@ namespace NeuralNet
 				NeuronPainterData data;
 				data.id = neuronIt.first;
 				data.painter = painter;
-				data.painter->setSceneParent(m_sceneParent);
+				//data.painter->setSceneParent(m_sceneParent);
 				m_neuronPainters[neuronIt.first] = data;			
 			}
 

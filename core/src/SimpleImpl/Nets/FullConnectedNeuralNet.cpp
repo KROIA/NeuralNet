@@ -107,6 +107,21 @@ namespace NeuralNet
 			}
 		}
 
+
+		for (auto& id : outputNeuronIDs)
+		{
+			m_biasList.insert({ id, QSFML::Utilities::RandomEngine::getFloat(-1, 1) });
+		}
+		for (auto& layer : hiddenLayerIDs)
+		{
+			for (auto& id : layer)
+			{
+				m_biasList.insert({ id, QSFML::Utilities::RandomEngine::getFloat(-1, 1) });
+			}
+		}
+		
+		
+
 		setConnections(connections);
 		buildNetwork();
 	}

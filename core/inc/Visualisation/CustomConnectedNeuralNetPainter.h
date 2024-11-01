@@ -62,10 +62,10 @@ namespace NeuralNet
 			void setSceneParent(QSFML::Scene* parent) override
 			{
 				Drawable::setSceneParent(parent);
-				for (auto& pair : m_neuronPainters)
-				{
-					pair.second.painter->setSceneParent(parent);
-				}
+				//for (auto& pair : m_neuronPainters)
+				//{
+				//	pair.second.painter->setSceneParent(parent);
+				//}
 			}
 			void drawComponent(sf::RenderTarget& target, sf::RenderStates states) const override;
 
