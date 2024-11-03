@@ -29,7 +29,7 @@ namespace NeuralNet
 			std::vector<std::vector<float>> origGenom;
 			origGenom.resize(nets.size());
 			genom.resize(nets.size());
-			memset(genom.data(), 0, genom.size() * sizeof(float));
+			//memset(genom.data(), 0, genom.size() * sizeof(float));
 			for (size_t i = 0; i < nets.size(); ++i)
 			{
 				origGenom[i] = nets[i].net->getGenom();

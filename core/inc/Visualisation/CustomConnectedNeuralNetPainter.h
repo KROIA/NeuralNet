@@ -25,6 +25,7 @@ namespace NeuralNet
 			void setNeuronSaturation(float saturation);
 			void setNeuronOutlineThickness(float thickness);
 			void setNeuronTextSize(float size);
+			void setConnectionWidth(float width) { m_connectionWidth = width; }
 
 
 

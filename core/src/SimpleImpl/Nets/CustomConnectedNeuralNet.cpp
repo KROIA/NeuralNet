@@ -439,9 +439,9 @@ namespace NeuralNet
 	size_t CustomConnectedNeuralNet::getGenomSize() const
 	{
 		size_t size = 0;
-		for (auto& layer : m_networkData.layers)
+		for (size_t i = 1; i < m_networkData.layers.size(); ++i)
 		{
-			for (auto& neuron : layer.neurons)
+			for (auto& neuron : m_networkData.layers[i].neurons)
 			{
 				size += 1 + neuron->getInputConnections().size();
 			}
@@ -452,9 +452,9 @@ namespace NeuralNet
 	std::vector<float> CustomConnectedNeuralNet::getGenom() const
 	{
 		std::vector<float> genom;
-		for (auto& layer : m_networkData.layers)
+		for (size_t i=1; i<m_networkData.layers.size(); ++i)
 		{
-			for (auto& neuron : layer.neurons)
+			for (auto& neuron : m_networkData.layers[i].neurons)
 			{
 				genom.push_back(neuron->getBias());
 				for (auto& connection : neuron->getInputConnections())
@@ -473,9 +473,9 @@ namespace NeuralNet
 			return;
 		}
 		size_t index = 0;
-		for (auto& layer : m_networkData.layers)
+		for (size_t i = 1; i < m_networkData.layers.size(); ++i)
 		{
-			for (auto& neuron : layer.neurons)
+			for (auto& neuron : m_networkData.layers[i].neurons)
 			{
 				neuron->setBias(genom[index++]);
 				for (auto& connection : neuron->getInputConnections())
