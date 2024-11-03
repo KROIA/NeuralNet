@@ -22,6 +22,10 @@ namespace NeuralNet
 			void setLayerSpacing(float spacing) { m_layerSpacing = spacing; }
 			void setNeuronSpacing(float spacing) { m_neuronSpacing = spacing; }
 			void setNeuronRadius(float radius);
+			void setNeuronSaturation(float saturation);
+			void setNeuronOutlineThickness(float thickness);
+			void setNeuronTextSize(float size);
+
 
 
 			void buildNetwork();

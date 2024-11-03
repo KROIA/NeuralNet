@@ -20,6 +20,10 @@ namespace NeuralNet
 				return m_neuron;
 			}
 
+			void setTextSize(float size)
+			{
+				m_idText.setScale(size);
+			}
 			sf::Vector2f getOutputConnectionPoint() const
 			{
 				return getPosition();// +sf::Vector2f(m_radius, 0);
@@ -35,6 +39,22 @@ namespace NeuralNet
 			float getRadius() const
 			{
 				return m_radius;
+			}
+			void setSaturation(float saturation)
+			{
+				m_saturation = saturation;
+			}
+			float getSaturation() const
+			{
+				return m_saturation;
+			}
+			void setOutlineThickness(float thickness)
+			{
+				m_outlineThickness = thickness;
+			}
+			float getOutlineThickness() const
+			{
+				return m_outlineThickness;
 			}
 			bool isGraphEnabled() const
 			{

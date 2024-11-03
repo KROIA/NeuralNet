@@ -87,6 +87,27 @@ namespace NeuralNet
 				neuronPainter.second.painter->setRadius(radius);
 			}
 		}
+		void CustomConnectedNeuralNetPainter::setNeuronSaturation(float saturation)
+		{
+			for (auto& neuronPainter : m_neuronPainters)
+			{
+				neuronPainter.second.painter->setSaturation(saturation);
+			}
+		}
+		void CustomConnectedNeuralNetPainter::setNeuronOutlineThickness(float thickness)
+		{
+			for (auto& neuronPainter : m_neuronPainters)
+			{
+				neuronPainter.second.painter->setOutlineThickness(thickness);
+			}
+		}
+		void CustomConnectedNeuralNetPainter::setNeuronTextSize(float size)
+		{
+			for (auto& neuronPainter : m_neuronPainters)
+			{
+				neuronPainter.second.painter->setTextSize(size);
+			}
+		}
 
 		void CustomConnectedNeuralNetPainter::destroyNetwork()
 		{
