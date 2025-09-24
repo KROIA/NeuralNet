@@ -89,7 +89,7 @@ namespace NeuralNet
 /// USER_SECTION_START 4
 
 /// USER_SECTION_END
-	class NEURAL_NET_EXPORT Profiler
+	class NEURAL_NET_API Profiler
 	{
 	public:
 		/// USER_SECTION_START 5
@@ -112,7 +112,7 @@ namespace NeuralNet
 
 
 #if LOGGER_LIBRARY_AVAILABLE == 1
-	class NEURAL_NET_EXPORT Logger 
+	class NEURAL_NET_API Logger 
 	{
 		/// USER_SECTION_START 8
 

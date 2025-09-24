@@ -11,13 +11,13 @@
 #ifndef BUILD_STATIC
 	//#pragma message("NEURALNET_LIB is a shared library")
 	#if defined(NEURALNET_LIB)
-		#define NEURAL_NET_EXPORT __declspec(dllexport)
+		#define NEURAL_NET_API __declspec(dllexport)
 	#else
-		#define NEURAL_NET_EXPORT __declspec(dllimport)
+		#define NEURAL_NET_API __declspec(dllimport)
 	#endif
 #else 
 	//#pragma message("NEURALNET_LIB is a static library")
-	#define NEURAL_NET_EXPORT
+	#define NEURAL_NET_API
 #endif
 
 /// USER_SECTION_START 2

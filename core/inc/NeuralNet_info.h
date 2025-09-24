@@ -29,7 +29,7 @@ namespace NeuralNet
 
 /// USER_SECTION_END
 
-	class NEURAL_NET_EXPORT LibraryInfo
+	class NEURAL_NET_API LibraryInfo
 	{
 		LibraryInfo() = delete;
 		LibraryInfo(const LibraryInfo&) = delete;
