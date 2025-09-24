@@ -10,7 +10,7 @@ namespace NeuralNet
 {
 	namespace LearnAlgo
 	{
-		class NEURAL_NET_EXPORT GeneticLearn
+		class NEURAL_NET_API GeneticLearn
 		{
 			GeneticLearn() = delete;
 		public:

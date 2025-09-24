@@ -21,7 +21,7 @@ namespace NeuralNet
 	{
 		class Backpropagation;
 	}
-	class NEURAL_NET_EXPORT CustomConnectedNeuralNet : public NeuralNetBase
+	class NEURAL_NET_API CustomConnectedNeuralNet : public NeuralNetBase
 	{
 		friend class Visualisation::CustomConnectedNeuralNetPainter;
 		friend LearnAlgo::Backpropagation;
@@ -156,7 +156,7 @@ namespace NeuralNet
 		
 		//LearnAlgo::Backpropagation m_backProp;
 
-		class NEURAL_NET_EXPORT CustomConnectedNeuralNetBuilder
+		class NEURAL_NET_API CustomConnectedNeuralNetBuilder
 		{
 		public:
 			static void buildNetwork(

@@ -5,7 +5,7 @@
 
 namespace NeuralNet
 {
-	class NEURAL_NET_EXPORT Connection
+	class NEURAL_NET_API Connection
 	{
 	public:
 		Connection()

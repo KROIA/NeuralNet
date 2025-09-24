@@ -5,7 +5,7 @@
 
 namespace NeuralNet
 {
-	class NEURAL_NET_EXPORT NeuralNetBase
+	class NEURAL_NET_API NeuralNetBase
 	{
 	public:
 

@@ -8,7 +8,7 @@ namespace NeuralNet
 {
 	namespace Visualisation
 	{
-		class NEURAL_NET_EXPORT NeuronPainter : public QSFML::Components::Drawable
+		class NEURAL_NET_API NeuronPainter : public QSFML::Components::Drawable
 		{
 			friend Neuron;
 			NeuronPainter(Neuron* neuron);

@@ -11,7 +11,7 @@ namespace NeuralNet
 		class VisuFullConnectedNeuronalNet;
 	}
 	
-	class NEURAL_NET_EXPORT FullConnectedNeuralNet : public CustomConnectedNeuralNet
+	class NEURAL_NET_API FullConnectedNeuralNet : public CustomConnectedNeuralNet
 	{
 	public:
 		FullConnectedNeuralNet(

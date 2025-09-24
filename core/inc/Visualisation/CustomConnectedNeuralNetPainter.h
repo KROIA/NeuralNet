@@ -10,7 +10,7 @@ namespace NeuralNet
 	class CustomConnectedNeuralNet;
 	namespace Visualisation
 	{
-		class NEURAL_NET_EXPORT CustomConnectedNeuralNetPainter : public QSFML::Components::Drawable
+		class NEURAL_NET_API CustomConnectedNeuralNetPainter : public QSFML::Components::Drawable
 		{
 			friend class CustomConnectedNeuralNet;
 			CustomConnectedNeuralNetPainter(

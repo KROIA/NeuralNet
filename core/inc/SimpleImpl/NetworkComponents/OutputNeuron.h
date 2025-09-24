@@ -8,7 +8,7 @@
 namespace NeuralNet
 {
 	class Connection;
-	class NEURAL_NET_EXPORT OutputNeuron : public Neuron
+	class NEURAL_NET_API OutputNeuron : public Neuron
 	{
 
 	public:

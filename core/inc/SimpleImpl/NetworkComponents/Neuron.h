@@ -12,7 +12,7 @@ namespace NeuralNet
 		class NeuronPainter;
 	}
 	class Connection;
-	class NEURAL_NET_EXPORT Neuron
+	class NEURAL_NET_API Neuron
 	{
 		friend Visualisation::NeuronPainter;
 	public:

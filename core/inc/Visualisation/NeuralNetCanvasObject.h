@@ -10,7 +10,7 @@
 
 namespace NeuralNet
 {
-	class NEURAL_NET_EXPORT NeuralNetCanvasObject: public QObject, public QSFML::Objects::GameObject
+	class NEURAL_NET_API NeuralNetCanvasObject: public QObject, public QSFML::Objects::GameObject
 	{
 		Q_OBJECT
 	public:

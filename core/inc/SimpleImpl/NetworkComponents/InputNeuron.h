@@ -6,7 +6,7 @@
 
 namespace NeuralNet
 {
-	class NEURAL_NET_EXPORT InputNeuron : public Neuron
+	class NEURAL_NET_API InputNeuron : public Neuron
 	{
 	public:
 		InputNeuron(ID id)

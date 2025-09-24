@@ -10,7 +10,7 @@ namespace NeuralNet
 {
 	namespace LearnAlgo
 	{
-		class NEURAL_NET_EXPORT Backpropagation
+		class NEURAL_NET_API Backpropagation
 		{
 			Backpropagation() {}
 		public:
