@@ -167,9 +167,10 @@ namespace NeuralNet
 		return widget;
 	}
 #else
-	QWidget* LibraryInfo::createInfoWidget(QWidget* parent)
+	QWidget* LibraryInfo::createInfoWidget(QWidget* parent, bool disableHyperlink)
 	{
 		NN_UNUSED(parent);
+		NN_UNUSED(disableHyperlink);
 		return nullptr;
 	}
 #endif
